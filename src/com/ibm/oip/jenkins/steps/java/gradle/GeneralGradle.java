@@ -6,7 +6,7 @@ import com.ibm.oip.jenkins.steps.java.gradle.release.PrepareRelease;
 
 import java.io.Serializable;
 
-public class GeneralGradle implements Serializable{
+class GeneralGradle implements Serializable{
     public static Step ASSEMBLE = new Assemble();
     public static Step PREPARE_RELEASE = new PrepareRelease();
     public static Step UNIT_TEST = new UnitTest();
