@@ -1,5 +1,7 @@
 package com.ibm.oip.jenkins.steps.java.gradle.release;
 
-interface BumpFinderStrategy {
+import java.io.Serializable;
+
+interface BumpFinderStrategy extends Serializable {
     String retrieveBump();
 }
