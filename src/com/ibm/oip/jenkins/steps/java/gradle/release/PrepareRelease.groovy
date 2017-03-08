@@ -8,15 +8,15 @@ class PrepareRelease implements Step {
 
     void doStep(BuildContext buildContext) {
         this.buildContext = buildContext;
-        prepareRelease(getBumpFinderStrategy().retrieveBump());
+        prepareRelease(determineVersionDump());
 
         def nextVersion = retrieveNextVersion();
         buildContext.getScriptEngine().currentBuild.displayName = nextVersion;
         buildContext.setVersion(nextVersion);
     }
 
-    public BumpFinderStrategy getBumpFinderStrategy() {
-        return new DefaultBumpFinderStrategy();
+    public String determineVersionDump() {
+        return "Patch";
     }
 
     private void prepareRelease(versionBump) {
