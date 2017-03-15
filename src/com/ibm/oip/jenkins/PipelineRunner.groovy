@@ -16,8 +16,6 @@ class PipelineRunner  implements Serializable {
 
     private Boolean slack = true;
 
-    private Boolean withDefaultConfiguration = true;
-
     public PipelineRunner() {
     }
 
@@ -51,16 +49,6 @@ class PipelineRunner  implements Serializable {
         return this;
     }
 
-    public PipelineRunner withDefaultConfiguration(Boolean withDefaultConfiguration) {
-        this.withDefaultConfiguration = withDefaultConfiguration;
-        return this;
-    }
-
-    public PipelineRunner withoutDefaultConfiguration() {
-        this.withDefaultConfiguration = false;
-        return this;
-    }
-
     public void run() {
         def buildContext;
 
@@ -68,9 +56,6 @@ class PipelineRunner  implements Serializable {
             if(this.pipelines[i].canBuild(branch)) {
                 try {
                     buildContext = BuildContext.create(scriptEngine, customProperties, branch);
-                    if(withDefaultConfiguration) {
-                        buildContext.getScriptEngine().properties([[$class: 'GitLabConnectionProperty', gitLabConnection: 'Gitlab']])
-                    }
                     this.pipelines[i].run(buildContext);
                 } catch(err) {
                     handleFailure(buildContext);
