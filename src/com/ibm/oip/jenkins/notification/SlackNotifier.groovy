@@ -13,7 +13,7 @@ class SlackNotifier implements Serializable {
         }
         buildContext.getScriptEngine().slackSend (color: "#ff0000", message:  "Build failed on project: " +
                 "${buildContext.getJobName()} (<${buildContext.getBuildUrl()}/console|${buildContext.getDisplayName()}>). " +
-                "Commit " + ${buildContext.getCommitId()[0..7]} +
+                "*Commit* ${buildContext.getCommitId()[0..7]}" +
                 "\n*Commit Message*: ${buildContext.getCommitMessage()}" +
                 "\n*From*: ${buildContext.getAuthor()}" +
                 "\n*Error in stage*: ${buildContext.getStage()}")
