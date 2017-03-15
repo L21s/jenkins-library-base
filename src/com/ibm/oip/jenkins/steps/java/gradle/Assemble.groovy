@@ -7,8 +7,6 @@ class Assemble implements Step {
 
     void doStep(BuildContext buildContext) {
         buildContext.changeStage('Assemble');
-        buildContext.getScriptEngine().gitlabCommitStatus("assemble") {
-            buildContext.getScriptEngine().sh("./gradlew clean assemble");
-        }
+        buildContext.getScriptEngine().sh("./gradlew clean assemble");
     }
 }
