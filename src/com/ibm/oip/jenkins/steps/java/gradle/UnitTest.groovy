@@ -9,12 +9,10 @@ class UnitTest implements Step{
     void doStep(BuildContext buildContext) {
         this.buildContext = buildContext;
         buildContext.changeStage('Unit test');
-        buildContext.getScriptEngine().gitlabCommitStatus("unit-test") {
-            try {
-                buildContext.getScriptEngine().sh("./gradlew test");
-            } finally {
-                publishTestResults();
-            }
+        try {
+            buildContext.getScriptEngine().sh("./gradlew test");
+        } finally {
+            publishTestResults();
         }
     }
 
