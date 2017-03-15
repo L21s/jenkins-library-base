@@ -21,7 +21,7 @@ class AbstractStaticAnalysis implements Step {
                             [$class: 'UsernamePasswordMultiBinding', credentialsId: 'sonarqube', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
             buildContext.getScriptEngine().sh("./gradlew sonarqube -Dsonar.branch=${buildContext.branch} " +
                     "-Dsonar.buildbreaker.skip=$skip " +
-                    "-Dsonar.host.url='${getSonarqubeUri()} " +
+                    "-Dsonar.host.url=${getSonarqubeUri()} " +
                     "-Dsonar.login='${buildContext.getScriptEngine().env.USERNAME}' " +
                     "-Dsonar.password='${buildContext.getScriptEngine().env.PASSWORD}'");
         }
