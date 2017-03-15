@@ -17,14 +17,13 @@ class AbstractStaticAnalysis implements Step {
     void doStep(BuildContext buildContext) {
         buildContext.changeStage('Static analysis');
 
-        buildContext.getScriptEngine().withCredentials([string(credentialsId: 'SONARQUBE_USER', variable: 'SONARQUBE_USER'),
-                                                        string(credentialsId: 'SONARQUBE_PASSWORD', variable: 'SONARQUBE_PASSWORD'),
-                                                        string(credentialsId: 'GITHUB_OAUTH_TOKEN', variable: 'GITHUB_OAUTH_TOKEN')]) {
+        buildContext.getScriptEngine() withCredentials([
+                            [$class: 'UsernamePasswordMultiBinding', credentialsId: 'sonarqube', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
             buildContext.getScriptEngine().sh("./gradlew sonarqube -Dsonar.branch=${buildContext.branch} " +
                     "-Dsonar.buildbreaker.skip=$skip " +
                     "-Dsonar.host.url='${getSonarqubeUri()} " +
-                    "-Dsonar.login='${buildContext.getScriptEngine().env.SONARQUBE_USER}' " +
-                    "-Dsonar.password='${buildContext.getScriptEngine().env.SONARQUBE_PASSWORD}'");
+                    "-Dsonar.login='${buildContext.getScriptEngine().env.USERNAME}' " +
+                    "-Dsonar.password='${buildContext.getScriptEngine().env.PASSWORD}'");
         }
     }
 }
