@@ -7,6 +7,6 @@ class FinishRelease implements Step {
     void doStep(BuildContext buildContext) {
         buildContext.changeStage('Publish release');
         buildContext.getScriptEngine().sh ("git push --tags");
-        buildContext.getScriptEngine().sh ("./gradlew uploadArchives");
+        buildContext.getScriptEngine().sh ("./gradlew publish");
     }
 }
