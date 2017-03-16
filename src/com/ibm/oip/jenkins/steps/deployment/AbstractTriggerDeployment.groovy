@@ -14,6 +14,8 @@ class AbstractTriggerDeployment implements Step {
     BuildContext buildContext;
     public void doStep(BuildContext buildContext) {
         buildContext.changeStage("Deployment to ${targetEnvironment}")
+        buildContext.getScriptEngine().sh "echo ${buildContext.version}"
+        
         def deployment = buildContext.getScriptEngine().build job: getDeploymentJobName(), parameters: [[$class: 'StringParameterValue', name: 'group', value: buildContext.group],
                                                     [$class: 'StringParameterValue', name: 'service', value: buildContext.project],
                                                     [$class: 'StringParameterValue', name: 'version', value: buildContext.version],
