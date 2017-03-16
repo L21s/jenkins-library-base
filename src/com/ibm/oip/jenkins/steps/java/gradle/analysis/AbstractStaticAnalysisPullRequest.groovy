@@ -22,10 +22,8 @@ class AbstractStaticAnalysisPullRequest implements Step {
 
     void doStep(BuildContext buildContext) {
         buildContext.changeStage('Static analysis');
-        buildContext.getScriptEngine().withCredentials([string(credentialsId: 'SONARQUBE_USER', variable: 'SONARQUBE_USER'),
-                                                        string(credentialsId: 'SONARQUBE_PASSWORD', variable: 'SONARQUBE_PASSWORD'),
-                                                        string(credentialsId: 'GITHUB_OAUTH_TOKEN', variable: 'GITHUB_OAUTH_TOKEN')]) {
 
+        buildContext.getScriptEngine().withCredentials([string(credentialsId: 'ibm-ghe-oauth', variable: 'OAUTH_GITHUB'), usernamePassword(credentialsId: 'sonarqube', passwordVariable: 'USERNAME', usernameVariable: 'PASSWORD')]) {
             def prNumber = buildContext.branch.replace("PR-", "");
             buildContext.getScriptEngine().sh "./gradlew sonarqube " +
                     "-Dsonar.analysis.mode=preview " +
