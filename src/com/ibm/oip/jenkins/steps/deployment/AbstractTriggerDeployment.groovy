@@ -5,7 +5,7 @@ import com.ibm.oip.jenkins.exceptions.DeploymentTriggerException
 import com.ibm.oip.jenkins.steps.Step;
 
 class AbstractTriggerDeployment implements Step {
-    private String targetEnvironment;
+    def targetEnvironment;
 
     public AbstractTriggerDeployment(String targetEnvironment){
         this.targetEnvironment = targetEnvironment;
