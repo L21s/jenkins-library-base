@@ -23,7 +23,7 @@ class AbstractStaticAnalysisPullRequest implements Step {
     void doStep(BuildContext buildContext) {
         buildContext.changeStage('Static analysis');
 
-        buildContext.getScriptEngine().withCredentials([string(credentialsId: 'ibm-ghe-oauth', variable: 'OAUTH_GITHUB'), usernamePassword(credentialsId: 'sonarqube', passwordVariable: 'USERNAME', usernameVariable: 'PASSWORD')]) {
+        buildContext.getScriptEngine().withCredentials([string(credentialsId: 'ibm-ghe-oauth', variable: 'GITHUB_OAUTH_TOKEN'), usernamePassword(credentialsId: 'sonarqube', passwordVariable: 'SONARQUBE_USERNAME', usernameVariable: 'SONARQUBE_PASSWORD')]) {
             def prNumber = buildContext.branch.replace("PR-", "");
             buildContext.getScriptEngine().sh "./gradlew sonarqube " +
                     "-Dsonar.analysis.mode=preview " +
@@ -31,7 +31,7 @@ class AbstractStaticAnalysisPullRequest implements Step {
                     "-Dsonar.github.repository=${buildContext.group}/${buildContext.project} " +
                     "-Dsonar.github.oauth=${buildContext.getScriptEngine().env.GITHUB_OAUTH_TOKEN} " +
                     "-Dsonar.host.url=${getSonarqubeUri()} " +
-                    "-Dsonar.login=${buildContext.getScriptEngine().env.SONARQUBE_USER} " +
+                    "-Dsonar.login=${buildContext.getScriptEngine().env.SONARQUBE_USERNAME} " +
                     "-Dsonar.password=${buildContext.getScriptEngine().env.SONARQUBE_PASSWORD}"
 
             // Code Coverage
