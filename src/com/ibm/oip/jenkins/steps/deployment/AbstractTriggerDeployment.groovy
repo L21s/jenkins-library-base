@@ -15,9 +15,9 @@ class AbstractTriggerDeployment implements Step {
     public void doStep(BuildContext buildContext) {
         buildContext.changeStage("Deployment to ${targetEnvironment}")
         def deployment = buildContext.getScriptEngine().build job: getDeploymentJobName(), parameters: [[$class: 'StringParameterValue', name: 'group', value: buildContext.group],
-                                                    [$class: 'StringParameterValue', name: 'service_name', value: buildContext.project],
+                                                    [$class: 'StringParameterValue', name: 'service', value: buildContext.project],
                                                     [$class: 'StringParameterValue', name: 'version', value: buildContext.version],
-                                                    [$class: 'StringParameterValue', name: 'target_environment', value: targetEnvironment]],
+                                                    [$class: 'StringParameterValue', name: 'environment', value: targetEnvironment]],
                                         wait: true, propagate: false, quietPeriod: 0
         if (deployment.result == 'FAILURE'){
             throw new DeploymentTriggerException("Deployment job to target environment ${targetEnvironment} failed!");
