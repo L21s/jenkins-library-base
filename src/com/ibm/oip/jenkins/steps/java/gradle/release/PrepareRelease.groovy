@@ -1,7 +1,7 @@
 package com.ibm.oip.jenkins.steps.java.gradle.release
 
 import com.ibm.oip.jenkins.BuildContext
-import com.ibm.oip.jenkins.steps.Step
+import com.ibm.oip.jenkins.steps.java.gradle.AbstractGradleStep
 
 class PrepareRelease extends AbstractGradleStep {
     private BuildContext buildContext;
