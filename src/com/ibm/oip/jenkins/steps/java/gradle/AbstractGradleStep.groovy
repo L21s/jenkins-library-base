@@ -1,6 +1,7 @@
 package com.ibm.oip.jenkins.steps.java.gradle;
 
 import com.ibm.oip.jenkins.BuildContext
+import com.ibm.oip.jenkins.steps.Step
 
 abstract class AbstractGradleStep implements Step {
 
