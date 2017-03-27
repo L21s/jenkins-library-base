@@ -23,8 +23,8 @@ class AbstractStaticAnalysisPullRequest extends AbstractGradleStep {
     void doStep(BuildContext buildContext) {
         buildContext.changeStage('Static analysis');
 
-        buildContext.getScriptEngine() withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'sonarqube', usernameVariable: 'SONARQUBE_USERNAME', passwordVariable: 'SONARQUBE_PASSWORD'], 
-                                                       [$class: 'StringBinding', credentialsId: 'ibm-ghe-oauth', variable: 'GITHUB_OAUTH_TOKEN']]) {
+        buildContext.getScriptEngine() withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: "${buildContext.getGroup()}-sonarqube", usernameVariable: 'SONARQUBE_USERNAME', passwordVariable: 'SONARQUBE_PASSWORD'],
+                                                       [$class: 'StringBinding', credentialsId: "${buildContext.getGroup()}-sonarqube-github-reporter", variable: 'GITHUB_OAUTH_TOKEN']]) {
             def prNumber = buildContext.branch.replace("PR-", "");
             doGradleStep(buildContext, "sonarqube " +
                     "-Dsonar.analysis.mode=preview " +

@@ -18,7 +18,7 @@ class AbstractStaticAnalysis extends AbstractGradleStep {
         buildContext.changeStage('Static analysis');
 
         buildContext.getScriptEngine().withCredentials([
-                            [$class: 'UsernamePasswordMultiBinding', credentialsId: 'sonarqube', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+                            [$class: 'UsernamePasswordMultiBinding', credentialsId: "${buildContext.getGroup()}-sonarqube", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
             doGradleStep(buildContext, "sonarqube -Dsonar.branch=${buildContext.branch} " +
                     "-Dsonar.buildbreaker.skip=$skip " +
                     "-Dsonar.host.url=${getSonarqubeUri()} " +
