@@ -7,6 +7,6 @@ class Assemble extends AbstractGradleStep {
 
     void doStep(BuildContext buildContext) {
         buildContext.changeStage('Assemble');
-        doGradleStep("clean assemble")
+        doGradleStep(buildContext, "clean assemble")
     }
 }

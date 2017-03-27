@@ -10,7 +10,7 @@ class UnitTest extends AbstractGradleStep {
         this.buildContext = buildContext;
         buildContext.changeStage('Unit test');
         try {
-            doGradleStep("test")
+            doGradleStep(buildContext, "test")
         } finally {
             publishTestResults();
         }

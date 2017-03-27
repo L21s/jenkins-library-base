@@ -8,7 +8,7 @@ class PrepareRelease extends AbstractGradleStep {
 
     void doStep(BuildContext buildContext) {
         this.buildContext = buildContext;
-        prepareRelease(determineVersionDump());
+        prepareRelease(buildContext, determineVersionDump());
 
         def nextVersion = retrieveNextVersion();
         buildContext.getScriptEngine().currentBuild.displayName = nextVersion;
@@ -19,9 +19,9 @@ class PrepareRelease extends AbstractGradleStep {
         return "Patch";
     }
 
-    private void prepareRelease(versionBump) {
+    private void prepareRelease(buildContext, versionBump) {
         buildContext.changeStage('Create release');
-        doGradleStep("createRelease -Prelease.disableRemoteCheck -Prelease.disableUncommittedCheck -Prelease.versionIncrementer=increment${versionBump} ");
+        doGradleStep(buildContext, "createRelease -Prelease.disableRemoteCheck -Prelease.disableUncommittedCheck -Prelease.versionIncrementer=increment${versionBump} ");
     }
 
     private String retrieveNextVersion() {

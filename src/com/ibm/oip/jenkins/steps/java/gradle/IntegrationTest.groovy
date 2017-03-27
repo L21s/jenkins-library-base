@@ -9,7 +9,7 @@ class IntegrationTest extends AbstractGradleStep {
         buildContext.changeStage('Integration test');
         def reportDir = 'build/reports/integrationTest';
         try {
-            doGradleStep("-x test integrationTest")
+            doGradleStep(buildContext, "-x test integrationTest")
         } finally {
             buildContext.getScriptEngine().publishHTML(target: [allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: "${reportDir}", reportFiles: 'index.html', reportName: 'Integrations-Test Report'])
             buildContext.getScriptEngine().step([$class: 'JUnitResultArchiver', testResults: "**/build/test-results/integrationTest/*.xml"])

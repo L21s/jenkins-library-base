@@ -26,7 +26,7 @@ class AbstractStaticAnalysisPullRequest extends AbstractGradleStep {
         buildContext.getScriptEngine() withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'sonarqube', usernameVariable: 'SONARQUBE_USERNAME', passwordVariable: 'SONARQUBE_PASSWORD'], 
                                                        [$class: 'StringBinding', credentialsId: 'ibm-ghe-oauth', variable: 'GITHUB_OAUTH_TOKEN']]) {
             def prNumber = buildContext.branch.replace("PR-", "");
-            doGradleStep("sonarqube " +
+            doGradleStep(buildContext, "sonarqube " +
                     "-Dsonar.analysis.mode=preview " +
                     "-Dsonar.github.pullRequest=${prNumber} " +
                     "-Dsonar.github.repository=${buildContext.group}/${buildContext.project} " +
@@ -36,7 +36,7 @@ class AbstractStaticAnalysisPullRequest extends AbstractGradleStep {
                     "-Dsonar.password=${buildContext.getScriptEngine().env.SONARQUBE_PASSWORD} ")
 
             // Code Coverage
-            doGradleStep("coverageTestReport")
+            doGradleStep(buildContext, "coverageTestReport")
             buildContext.getScriptEngine().publishHTML(target: [allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: "build/jacocoHtml", reportFiles: 'index.html', reportName: 'Coverage Report'])
 
             def htmlReport = buildContext.getScriptEngine().readFile 'build/jacocoHtml/index.html';

@@ -7,6 +7,6 @@ class ShadowAssemble extends AbstractGradleStep {
 
     void doStep(BuildContext buildContext) {
         buildContext.changeStage('Assemble');
-        doGradleStep("clean shadowJar")
+        doGradleStep(buildContext, "clean shadowJar")
     }
 }
