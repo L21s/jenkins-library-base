@@ -3,7 +3,7 @@ package com.ibm.oip.jenkins.steps.java.gradle.release
 import com.ibm.oip.jenkins.BuildContext
 import com.ibm.oip.jenkins.steps.Step
 
-class PrepareRelease implements Step {
+class PrepareRelease extends AbstractGradleStep {
     private BuildContext buildContext;
 
     void doStep(BuildContext buildContext) {
@@ -21,7 +21,7 @@ class PrepareRelease implements Step {
 
     private void prepareRelease(versionBump) {
         buildContext.changeStage('Create release');
-        buildContext.getScriptEngine().sh("./gradlew createRelease -Prelease.disableRemoteCheck -Prelease.disableUncommittedCheck -Prelease.versionIncrementer=increment${versionBump}");
+        doGradleStep("createRelease -Prelease.disableRemoteCheck -Prelease.disableUncommittedCheck -Prelease.versionIncrementer=increment${versionBump} ");
     }
 
     private String retrieveNextVersion() {

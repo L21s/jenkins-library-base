@@ -3,10 +3,10 @@ package com.ibm.oip.jenkins.steps.java.gradle;
 import com.ibm.oip.jenkins.BuildContext
 import com.ibm.oip.jenkins.steps.Step;
 
-class ShadowAssemble implements Step {
+class ShadowAssemble extends AbstractGradleStep {
 
     void doStep(BuildContext buildContext) {
         buildContext.changeStage('Assemble');
-        buildContext.getScriptEngine().sh("./gradlew clean shadowJar");
+        doGradleStep("clean shadowJar")
     }
 }

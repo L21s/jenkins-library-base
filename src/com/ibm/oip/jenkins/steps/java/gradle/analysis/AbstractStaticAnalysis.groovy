@@ -1,9 +1,9 @@
 package com.ibm.oip.jenkins.steps.java.gradle.analysis
 
 import com.ibm.oip.jenkins.BuildContext
-import com.ibm.oip.jenkins.steps.Step
+import com.ibm.oip.jenkins.steps.java.gradle.AbstractGradleStep
 
-class AbstractStaticAnalysis implements Step {
+class AbstractStaticAnalysis extends AbstractGradleStep {
     def skip;
 
     public AbstractStaticAnalysis(def skip) {
@@ -19,11 +19,11 @@ class AbstractStaticAnalysis implements Step {
 
         buildContext.getScriptEngine().withCredentials([
                             [$class: 'UsernamePasswordMultiBinding', credentialsId: 'sonarqube', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-            buildContext.getScriptEngine().sh("./gradlew sonarqube -Dsonar.branch=${buildContext.branch} " +
+            doGradleStep("sonarqube -Dsonar.branch=${buildContext.branch} " +
                     "-Dsonar.buildbreaker.skip=$skip " +
                     "-Dsonar.host.url=${getSonarqubeUri()} " +
                     "-Dsonar.login='${buildContext.getScriptEngine().env.USERNAME}' " +
-                    "-Dsonar.password='${buildContext.getScriptEngine().env.PASSWORD}'");
+                    "-Dsonar.password='${buildContext.getScriptEngine().env.PASSWORD}' ");
         }
     }
 }

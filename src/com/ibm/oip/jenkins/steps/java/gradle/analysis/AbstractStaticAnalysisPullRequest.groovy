@@ -1,10 +1,10 @@
 package com.ibm.oip.jenkins.steps.java.gradle.analysis
 
 import com.ibm.oip.jenkins.BuildContext
-import com.ibm.oip.jenkins.steps.Step
+import com.ibm.oip.jenkins.steps.java.gradle.AbstractGradleStep
 import groovy.json.JsonOutput
 
-class AbstractStaticAnalysisPullRequest implements Step {
+class AbstractStaticAnalysisPullRequest extends AbstractGradleStep {
     static class GithubStatus implements Serializable {
         String state;
         String target_url;
@@ -26,17 +26,17 @@ class AbstractStaticAnalysisPullRequest implements Step {
         buildContext.getScriptEngine() withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'sonarqube', usernameVariable: 'SONARQUBE_USERNAME', passwordVariable: 'SONARQUBE_PASSWORD'], 
                                                        [$class: 'StringBinding', credentialsId: 'ibm-ghe-oauth', variable: 'GITHUB_OAUTH_TOKEN']]) {
             def prNumber = buildContext.branch.replace("PR-", "");
-            buildContext.getScriptEngine().sh "./gradlew sonarqube " +
+            doGradleStep("sonarqube " +
                     "-Dsonar.analysis.mode=preview " +
                     "-Dsonar.github.pullRequest=${prNumber} " +
                     "-Dsonar.github.repository=${buildContext.group}/${buildContext.project} " +
                     "-Dsonar.github.oauth=${buildContext.getScriptEngine().env.GITHUB_OAUTH_TOKEN} " +
                     "-Dsonar.host.url=${getSonarqubeUri()} " +
                     "-Dsonar.login=${buildContext.getScriptEngine().env.SONARQUBE_USERNAME} " +
-                    "-Dsonar.password=${buildContext.getScriptEngine().env.SONARQUBE_PASSWORD}"
+                    "-Dsonar.password=${buildContext.getScriptEngine().env.SONARQUBE_PASSWORD} ")
 
             // Code Coverage
-            buildContext.getScriptEngine().sh "./gradlew coverageTestReport"
+            doGradleStep("coverageTestReport")
             buildContext.getScriptEngine().publishHTML(target: [allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: "build/jacocoHtml", reportFiles: 'index.html', reportName: 'Coverage Report'])
 
             def htmlReport = buildContext.getScriptEngine().readFile 'build/jacocoHtml/index.html';

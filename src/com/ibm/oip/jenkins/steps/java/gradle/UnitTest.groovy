@@ -3,14 +3,14 @@ package com.ibm.oip.jenkins.steps.java.gradle;
 import com.ibm.oip.jenkins.BuildContext
 import com.ibm.oip.jenkins.steps.Step;
 
-class UnitTest implements Step{
+class UnitTest extends AbstractGradleStep {
     private BuildContext buildContext;
 
     void doStep(BuildContext buildContext) {
         this.buildContext = buildContext;
         buildContext.changeStage('Unit test');
         try {
-            buildContext.getScriptEngine().sh("./gradlew test");
+            doGradleStep("test")
         } finally {
             publishTestResults();
         }
