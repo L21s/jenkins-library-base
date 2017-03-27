@@ -5,9 +5,9 @@ import com.ibm.oip.jenkins.steps.Step
 
 abstract class AbstractGradleStep implements Step {
 
-    void doGradleStep(BuildContext ctx, String gradleCommand) {
+    void doGradleStep(BuildContext buildContext, String gradleCommand) {
         buildContext.getScriptEngine().withCredentials([
-                [$class: 'UsernamePasswordMultiBinding', credentialsId: ctx.getGroup() + '-nexus', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+                [$class: 'UsernamePasswordMultiBinding', credentialsId: buildContext.getGroup() + '-nexus', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
             buildContext.getScriptEngine().sh("./gradlew ${gradleCommand} -PrepositoryUsername=${buildContext.getScriptEngine().env.USERNAME} -PrepositoryPassword=${buildContext.getScriptEngine().env.PASSWORD}");
         }
     }
