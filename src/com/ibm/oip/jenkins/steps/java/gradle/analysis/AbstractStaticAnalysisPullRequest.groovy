@@ -45,7 +45,7 @@ class AbstractStaticAnalysisPullRequest extends AbstractGradleStep {
 
             def target;
             if (buildContext.getScriptEngine().fileExists('.coverage')) {
-                target = Integer.parseInt(buildContext.getScriptEngine().readFile('.coverage'))
+                target = Integer.parseInt(buildContext.getScriptEngine().readFile('.coverage').trim())
             } else {
                 target = 80;
             }
