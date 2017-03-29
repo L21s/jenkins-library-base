@@ -3,15 +3,11 @@ package com.ibm.oip.jenkins.steps.java.gradle.analysis
 import com.ibm.oip.jenkins.BuildContext
 import com.ibm.oip.jenkins.steps.java.gradle.AbstractGradleStep
 
-class AbstractStaticAnalysis extends AbstractGradleStep {
+class StaticAnalysis extends AbstractGradleStep {
     def skip;
 
-    public AbstractStaticAnalysis(def skip) {
+    public StaticAnalysis(def skip) {
         this.skip = skip;
-    }
-
-    String getSonarqubeUri() {
-        throw new UnsupportedOperationException("Please override this method and provide an sonarqube URI like https://devstack.ibm-insurance-platform.com/sonarqube")
     }
 
     void doStep(BuildContext buildContext) {
@@ -21,7 +17,7 @@ class AbstractStaticAnalysis extends AbstractGradleStep {
                             [$class: 'UsernamePasswordMultiBinding', credentialsId: "${buildContext.getGroup()}-sonarqube", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
             doGradleStep(buildContext, "sonarqube -Dsonar.branch=${buildContext.branch} " +
                     "-Dsonar.buildbreaker.skip=$skip " +
-                    "-Dsonar.host.url=${getSonarqubeUri()} " +
+                    "-Dsonar.host.url=\$SONARQUBE_URL " +
                     "-Dsonar.login='${buildContext.getScriptEngine().env.USERNAME}' " +
                     "-Dsonar.password='${buildContext.getScriptEngine().env.PASSWORD}' ");
         }
