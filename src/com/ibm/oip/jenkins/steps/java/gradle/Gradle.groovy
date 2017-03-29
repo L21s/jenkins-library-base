@@ -7,6 +7,7 @@ import com.ibm.oip.jenkins.steps.java.gradle.analysis.*
 
 class Gradle implements Serializable {
     public static Step ASSEMBLE = new Assemble();
+    public static Step SHADOW_ASSEMBLE = new GradleAssemble();
     public static Step PREPARE_RELEASE = new PrepareRelease();
     public static Step UNIT_TEST = new UnitTest();
     public static Step INTEGRATION_TEST = new IntegrationTest();
