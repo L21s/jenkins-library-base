@@ -5,7 +5,11 @@ import com.ibm.oip.jenkins.ega.steps.deployment.cloudfoundry.*;
 import com.ibm.oip.jenkins.ega.steps.deployment.docker.*
 
 class Deployment {
-    public static Step CLOUDFOUNDRY = new CloudFoundryDeployment();
-    public static Step IBM_CONTAINER = new IBMContainerDeployment();
-
+    public static Step CLOUDFOUNDRY(String targetEnv) {
+        return new CloudFoundryDeployment(targetEnv);
+    }
+    
+    public static Step IBM_CONTAINER(String targetEnv) {
+        return new IBMContainerDeployment(targetEnv);
+    }
 }
