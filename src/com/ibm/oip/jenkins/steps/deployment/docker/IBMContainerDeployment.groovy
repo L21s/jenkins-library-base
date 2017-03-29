@@ -1,4 +1,4 @@
-package com.ibm.oip.jenkins.ega.steps.deployment
+package com.ibm.oip.jenkins.ega.steps.deployment.docker
 
 import com.ibm.oip.jenkins.BuildContext
 import com.ibm.oip.jenkins.steps.Step
