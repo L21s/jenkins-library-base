@@ -13,7 +13,7 @@ class Pipeline implements Serializable {
         buildContext.getScriptEngine().node {
             buildContext.getScriptEngine().ws(buildContext.getProject() + "-workspace") {
                 buildContext.getScriptEngine().configFileProvider(
-                        [configFile(fileId: "${buildContext.getGroup()}-config", variable: 'PROJECT_CONFIG')]) {
+                        [buildContext.getScriptEngine().configFile(fileId: "${buildContext.getGroup()}-config", variable: 'PROJECT_CONFIG')]) {
                     def variables = load env.PROJECT_CONFIG
                     withEnv(variables) {
                         buildContext.getScriptEngine().deleteDir();
