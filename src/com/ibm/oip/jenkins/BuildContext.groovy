@@ -34,8 +34,6 @@ class BuildContext implements Serializable {
     public static BuildContext create(scriptEngine, customProperties, branch) {
         BuildContext result = new BuildContext();
         result.scriptEngine = scriptEngine;
-        result.group = customProperties["group"]
-        result.project = customProperties["project"]
         result.version = customProperties["version"]
         result.jobName = scriptEngine.env.JOB_NAME;
         result.buildUrl = scriptEngine.env.BUILD_URL;

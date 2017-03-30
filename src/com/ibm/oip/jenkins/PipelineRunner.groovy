@@ -12,7 +12,7 @@ class PipelineRunner  implements Serializable {
 
     private Object env;
 
-    def customProperties;
+    def customProperties = [];
 
     private Boolean slack = true;
 
