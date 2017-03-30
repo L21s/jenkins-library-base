@@ -9,11 +9,5 @@ class SCMCheckout implements Step {
         buildContext.getScriptEngine().checkout buildContext.getScriptEngine().scm
 
         buildContext.addGitProperties();
-
-        // retrieve org and project
-        def url = buildContext.getScriptEngine().scm.getUserRemoteConfigs()[0].getUrl()
-        def parts = url =~ ".*\\/(.*?)\\/(.*?)\\.git"
-        buildContext.setGroup(parts[0][1])
-        buildContext.setProject(parts[0][2])
     }
 }

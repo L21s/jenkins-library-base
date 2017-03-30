@@ -41,6 +41,12 @@ class BuildContext implements Serializable {
         result.displayName = scriptEngine.currentBuild.displayName;
         result.customProperties = customProperties;
         result.branch = branch;
+
+        // retrieve org and project
+        def url = scriptEngine.scm.getUserRemoteConfigs()[0].getUrl()
+        def parts = url =~ ".*\\/(.*?)\\/(.*?)\\.git" // Github Regex
+        buildContext.setGroup(parts[0][1])
+        buildContext.setProject(parts[0][2])
         return result;
     }
 
