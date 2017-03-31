@@ -6,6 +6,12 @@ import com.ibm.oip.jenkins.steps.java.gradle.AbstractGradleStep
 class PrepareRelease extends AbstractGradleStep {
     private BuildContext buildContext;
 
+    def bumpMapping = [
+        "patch": "incrementPatch",
+        "minor": "incrementMinor",
+        "major": " incrementMajor"
+    ]
+
     void doStep(BuildContext buildContext) {
         this.buildContext = buildContext;
         prepareRelease(buildContext, determineVersionDump());
@@ -15,15 +21,6 @@ class PrepareRelease extends AbstractGradleStep {
         buildContext.setVersion(nextVersion);
     }
 
-    @NonCPS
-    String retrievePrId() {
-        def pr = buildContext.getCommitMessage() =~ ".*Merge pull request #(\\d+).*"
-        if(!pr.hasGroup()) {
-            return null;
-        }
-        return pr[0][1];
-    }
-
     public String determineVersionDump() {
         def prNumber = retrievePrId()
         if (!prNumber) {
@@ -31,23 +28,35 @@ class PrepareRelease extends AbstractGradleStep {
         }
 
         def bump = "patch";
-        buildContext.getScriptEngine() withCredentials([[$class: 'StringBinding', credentialsId: "${buildContext.getGroup()}-sonarqube-github-reporter", variable: 'GITHUB_OAUTH_TOKEN']]) {
+        buildContext.getScriptEngine() withCredentials([[$class: 'StringBinding', credentialsId: "${buildContext.getGroup()}-sonarqube-github-reporter", variable: 'GITHUB_OAUTH_TOKEN']])  {
             def output = buildContext.getScriptEngine().sh("curl -X GET -H 'Authorization: token ${buildContext.getScriptEngine().env.GITHUB_OAUTH_TOKEN}' \$GITHUB_API_URL/repos/${buildContext.getGroup()}/${buildContext.getProject()}/issues/${prNumber}/labels | jq -r '.[].name' > labels.txt")
             String[] labels = buildContext.getScriptEngine().readFile 'labels.txt'
+            buildContext.getScriptEngine().sh "echo ${labels}"
             labels.any { label ->
                 if (label == "major" || label == "minor") {
+                    buildContext.getScriptEngine().sh "echo 'found major or minor'"
                     bump = label;
                     return true;
                 }
             }
         }
 
-        return bump;
+        return bumpMapping[bump];
+    }
+
+
+    @NonCPS
+    String retrievePrId() {
+        def pr = buildContext.getCommitMessage() =~ ".*Merge pull request #(\\d+).*"
+        if (!pr.hasGroup()) {
+            return null;
+        }
+        return pr[0][1];
     }
 
     private void prepareRelease(buildContext, versionBump) {
         buildContext.changeStage('Create release');
-        doGradleStep(buildContext, "createRelease -Prelease.disableRemoteCheck -Prelease.disableUncommittedCheck -Prelease.versionIncrementer=increment${versionBump} ");
+        doGradleStep(buildContext, "createRelease -Prelease.disableRemoteCheck -Prelease.disableUncommittedCheck -Prelease.versionIncrementer=${versionBump} ");
     }
 
     private String retrieveNextVersion() {
