@@ -30,12 +30,11 @@ class PrepareRelease extends AbstractGradleStep {
 
             String[] labels = new File('labels.txt')
             def version = "patch";
-            labels.forEach { label ->
+            labels.any { label ->
                 if (label == "major" || label == "minor") {
                     version = label;
-                    return;
+                    return true;
                 }
-
             }
         }
 
