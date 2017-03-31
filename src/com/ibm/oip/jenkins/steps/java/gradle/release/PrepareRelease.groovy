@@ -33,7 +33,7 @@ class PrepareRelease extends AbstractGradleStep {
             def labels = []
             String labelFile = buildContext.getScriptEngine().readFile 'labels.txt'
             labels = labelFile.split("\\n")
-            labels.any { label ->
+            labels.each { label ->
                 buildContext.getScriptEngine().sh "echo ${label}"
                 if (label == "major" || label == "minor") {
                     buildContext.getScriptEngine().sh "echo 'found major or minor'"
@@ -41,7 +41,7 @@ class PrepareRelease extends AbstractGradleStep {
                     return true;
                 }
 
-                return;
+                return false;
             }
         }
 
