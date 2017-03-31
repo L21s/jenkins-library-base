@@ -16,7 +16,29 @@ class PrepareRelease extends AbstractGradleStep {
     }
 
     public String determineVersionDump() {
-        return "Patch";
+        // get PR number from commit
+        def pr = buildContext.getCommitMessage() =~ ".*Merge pull request #(\\d+).*"
+
+        if (!pr.hasGroup()) {
+            return "Patch"
+        }
+        def prNumber = pr[0][1];
+
+        buildContext.getScriptEngine() withCredentials([[$class: 'StringBinding', credentialsId: "${buildContext.getGroup()}-sonarqube-github-reporter", variable: 'GITHUB_OAUTH_TOKEN']]) {
+            buildContext.getScriptEngine().sh "curl -s -H \"Authorization: token \$GITHUB_OAUTH_TOKEN\" \$GITHUB_API_URL/repos/${buildContext.getGroup()}/${buildContext.getProject()}/issues/${prNumber}/labels | jq -r \".[].name\" > labels.txt"
+
+            String[] labels = new File('labels.txt')
+            def version = "patch";
+            labels.forEach { label ->
+                if (label == "major" || label == "minor") {
+                    version = label;
+                    return;
+                }
+
+            }
+        }
+
+        return version;
     }
 
     private void prepareRelease(buildContext, versionBump) {
