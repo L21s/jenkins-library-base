@@ -26,8 +26,8 @@ class PrepareRelease extends AbstractGradleStep {
         def prNumber = pr[0][1];
 
         buildContext.getScriptEngine() withCredentials([[$class: 'StringBinding', credentialsId: "${buildContext.getGroup()}-sonarqube-github-reporter", variable: 'GITHUB_OAUTH_TOKEN_NEW']]) {
-            def githubApiResult = buildContext.getScriptEngine().sh(script: "curl -s -H \"Authorization: token cd96d479772924b4ab66d30e1235e43f1241496a\" \$GITHUB_API_URL/repos/${buildContext.getGroup()}/${buildContext.getProject()}/issues/${prNumber}/labels", returnStdout: true)
-            buildContext.getScriptEngine().sh("echo ${githubApiResult} | jq -r \".[].name\" > labels.txt")
+            buildContext.getScriptEngine().sh "curl -i -v -H \"Authorization: token ${buildContext.getScriptEngine().env.GITHUB_OAUTH_TOKEN_NEW}\" \$GITHUB_API_URL/repos/${buildContext.getGroup()}/${buildContext.getProject()}/issues/${prNumber}/labels | jq -r '.[].name' > labels.txt"
+
             String[] labels = new File('labels.txt')
             def version = "patch";
             labels.forEach { label ->
