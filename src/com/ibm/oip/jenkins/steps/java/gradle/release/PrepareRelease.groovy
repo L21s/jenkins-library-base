@@ -15,6 +15,7 @@ class PrepareRelease extends AbstractGradleStep {
         buildContext.setVersion(nextVersion);
     }
 
+    @NonCPS
     public String determineVersionDump() {
         // get PR number from commit
         def pr = buildContext.getCommitMessage() =~ ".*Merge pull request #(\\d+).*"
