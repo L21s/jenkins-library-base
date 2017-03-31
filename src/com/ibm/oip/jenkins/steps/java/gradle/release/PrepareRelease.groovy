@@ -34,15 +34,12 @@ class PrepareRelease extends AbstractGradleStep {
             buildContext.getScriptEngine().sh "echo size ${labels.size()}"
             buildContext.getScriptEngine().sh "echo cont ${labels}"
 
-            labels.each { label ->
-                buildContext.getScriptEngine().sh "echo ${label}"
-                if (label == "major" || label == "minor") {
+            for(int i = 0; i < labels.size(); i++=) {
+                if(labels[i] == "major" || labels[i] == "minor") {
                     buildContext.getScriptEngine().sh "echo 'found major or minor'"
                     bump = label;
-                    return true;
+                    break;
                 }
-
-                return false;
             }
         }
 
