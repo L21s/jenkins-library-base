@@ -31,12 +31,10 @@ class PrepareRelease extends AbstractGradleStep {
         buildContext.getScriptEngine() withCredentials([[$class: 'StringBinding', credentialsId: "${buildContext.getGroup()}-sonarqube-github-reporter", variable: 'GITHUB_OAUTH_TOKEN']])  {
             def output = buildContext.getScriptEngine().sh("curl -X GET -H 'Authorization: token ${buildContext.getScriptEngine().env.GITHUB_OAUTH_TOKEN}' \$GITHUB_API_URL/repos/${buildContext.getGroup()}/${buildContext.getProject()}/issues/${prNumber}/labels | jq -r '.[].name' > labels.txt")
             def labels = buildContext.getScriptEngine().readFile('labels.txt').split("\\n")
-            buildContext.getScriptEngine().sh "echo size ${labels.size()}"
-            buildContext.getScriptEngine().sh "echo cont ${labels}"
 
             for(int i = 0; i < labels.size(); i++) {
                 if(labels[i] == "major" || labels[i] == "minor") {
-                    buildContext.getScriptEngine().sh "echo 'found major or minor'"
+                    buildContext.getScriptEngine().sh "echo found ${labels[i]}"
                     bump = labels[i];
                     break;
                 }
