@@ -33,6 +33,7 @@ class PrepareRelease extends AbstractGradleStep {
             def labels = []
             String labelFile = buildContext.getScriptEngine().readFile 'labels.txt'
             labels.forEach { label ->
+                buildContext.getScriptEngine().sh "echo abc ${label}"
                 if (label == "major" || label == "minor") {
                     buildContext.getScriptEngine().sh "echo 'found major or minor'"
                     bump = label;
