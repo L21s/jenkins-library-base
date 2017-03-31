@@ -15,7 +15,6 @@ class PrepareRelease extends AbstractGradleStep {
         buildContext.setVersion(nextVersion);
     }
 
-    @NonCPS
     public String determineVersionDump() {
         // get PR number from commit
         def pr = buildContext.getCommitMessage() =~ ".*Merge pull request #(\\d+).*"
@@ -25,11 +24,9 @@ class PrepareRelease extends AbstractGradleStep {
         }
         def prNumber = pr[0][1];
 
-        buildContext.getScriptEngine() withCredentials([[$class: 'StringBinding', credentialsId: "${buildContext.getGroup()}-sonarqube-github-reporter", variable: 'GITHUB_OAUTH_TOKEN_NEW']]) {
-            def output = buildContext.getScriptEngine().sh("curl -X GET -H 'Authorization: token cd96d479772924b4ab66d30e1235e43f1241496a' \$GITHUB_API_URL/repos/${buildContext.getGroup()}/${buildContext.getProject()}/issues/${prNumber}/labels")
-            buildContext.getScriptEngine().sh "echo before loading labels"
+        buildContext.getScriptEngine() withCredentials([[$class: 'StringBinding', credentialsId: "${buildContext.getGroup()}-sonarqube-github-reporter", variable: 'GITHUB_OAUTH_TOKEN']]) {
+            def output = buildContext.getScriptEngine().sh("curl -X GET -H 'Authorization: token ${buildContext.getScriptEngine().env.GITHUB_OAUTH_TOKEN}' \$GITHUB_API_URL/repos/${buildContext.getGroup()}/${buildContext.getProject()}/issues/${prNumber}/labels | jq -r '.[].name' > labels.txt")
             String[] labels = new File('labels.txt')
-            buildContext.getScriptEngine().sh "echo after loading labels"
             def version = "patch";
             labels.any { label ->
                 if (label == "major" || label == "minor") {
