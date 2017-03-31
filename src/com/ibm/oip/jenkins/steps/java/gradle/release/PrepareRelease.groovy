@@ -25,9 +25,9 @@ class PrepareRelease extends AbstractGradleStep {
         }
         def prNumber = pr[0][1];
 
-        buildContext.getScriptEngine() withCredentials([[$class: 'StringBinding', credentialsId: "${buildContext.getGroup()}-sonarqube-github-reporter", variable: 'GITHUB_OAUTH_TOKEN']]) {
+        buildContext.getScriptEngine() withCredentials([[$class: 'StringBinding', credentialsId: "${buildContext.getGroup()}-sonarqube-github-reporter", variable: 'GITHUB_OAUTH_TOKEN2']]) {
             buildContext.getScriptEngine().sh "echo ${buildContext.getScriptEngine().env.GITHUB_OAUTH_TOKEN}"
-            buildContext.getScriptEngine().sh "curl -i -H \"Authorization: token ${buildContext.getScriptEngine().env.GITHUB_OAUTH_TOKEN}\" \$GITHUB_API_URL/repos/${buildContext.getGroup()}/${buildContext.getProject()}/issues/${prNumber}/labels | jq -r \".[].name\" > labels.txt"
+            buildContext.getScriptEngine().sh "curl -i -H \"Authorization: token ${buildContext.getScriptEngine().env.GITHUB_OAUTH_TOKEN2}\" \$GITHUB_API_URL/repos/${buildContext.getGroup()}/${buildContext.getProject()}/issues/${prNumber}/labels | jq -r \".[].name\" > labels.txt"
 
             String[] labels = new File('labels.txt')
             def version = "patch";
