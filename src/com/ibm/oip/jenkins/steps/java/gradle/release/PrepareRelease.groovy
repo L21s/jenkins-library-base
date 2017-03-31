@@ -40,6 +40,8 @@ class PrepareRelease extends AbstractGradleStep {
                     bump = label;
                     return true;
                 }
+
+                return;
             }
         }
 
