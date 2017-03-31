@@ -36,12 +36,9 @@ class PrepareRelease extends AbstractGradleStep {
             def version = "patch";
             labels.any { label ->
                 if (label == "major" || label == "minor") {
-                    buildContext.getScriptEngine().sh "tag is major or minor"
                     version = label;
                     return true;
                 }
-
-                buildContext.getScriptEngine().sh "tag is NOT major or minor"
             }
         }
 
