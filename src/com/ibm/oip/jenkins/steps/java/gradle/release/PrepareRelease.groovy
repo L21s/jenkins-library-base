@@ -29,10 +29,8 @@ class PrepareRelease extends AbstractGradleStep {
 
         def bump = "patch";
         buildContext.getScriptEngine() withCredentials([[$class: 'StringBinding', credentialsId: "${buildContext.getGroup()}-sonarqube-github-reporter", variable: 'GITHUB_OAUTH_TOKEN']])  {
-            def output = buildContext.getScriptEngine().sh("curl -X GET -H 'Authorization: token ${buildContext.getScriptEngine().env.GITHUB_OAUTH_TOKEN}' \$GITHUB_API_URL/repos/${buildContext.getGroup()}/${buildContext.getProject()}/issues/${prNumber}/labels | jq -r '.[].name' > labels.txt")
-            def labels = []
-            String labelFile = buildContext.getScriptEngine().readFile 'labels.txt'
-            labels = labelFile.split("\\n")
+            def labels = buildContext.getScriptEngine().sh(returnStdout: true, script: "curl -X GET -H 'Authorization: token ${buildContext.getScriptEngine().env.GITHUB_OAUTH_TOKEN}' \$GITHUB_API_URL/repos/${buildContext.getGroup()}/${buildContext.getProject()}/issues/${prNumber}/labels | jq -r '[.[].name]' > labels.txt")
+            buildContext.getScriptEngine().sh "echo ${labels}"
             labels.each { label ->
                 buildContext.getScriptEngine().sh "echo ${label}"
                 if (label == "major" || label == "minor") {
