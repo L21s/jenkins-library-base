@@ -15,14 +15,20 @@ class PrepareRelease extends AbstractGradleStep {
         buildContext.setVersion(nextVersion);
     }
 
-    public String determineVersionDump() {
-        // get PR number from commit
+    @NonCPS
+    String retrievePrId() {
         def pr = buildContext.getCommitMessage() =~ ".*Merge pull request #(\\d+).*"
+        if(!pr.hasGroup()) {
+            return null;
+        }
+        return pr[0][1];
+    }
 
-        if (!pr.hasGroup()) {
+    public String determineVersionDump() {
+        def prNumber = retrievePrId()
+        if (!prNumber) {
             return "Patch"
         }
-        def prNumber = pr[0][1];
 
         buildContext.getScriptEngine() withCredentials([[$class: 'StringBinding', credentialsId: "${buildContext.getGroup()}-sonarqube-github-reporter", variable: 'GITHUB_OAUTH_TOKEN']]) {
             def output = buildContext.getScriptEngine().sh("curl -X GET -H 'Authorization: token ${buildContext.getScriptEngine().env.GITHUB_OAUTH_TOKEN}' \$GITHUB_API_URL/repos/${buildContext.getGroup()}/${buildContext.getProject()}/issues/${prNumber}/labels | jq -r '.[].name' > labels.txt")
