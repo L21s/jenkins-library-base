@@ -9,7 +9,7 @@ class PrepareRelease extends AbstractGradleStep {
     def bumpMapping = [
         "patch": "incrementPatch",
         "minor": "incrementMinor",
-        "major": " incrementMajor"
+        "major": "incrementMajor"
     ]
 
     void doStep(BuildContext buildContext) {
@@ -34,14 +34,13 @@ class PrepareRelease extends AbstractGradleStep {
 
             for(int i = 0; i < labels.size(); i++) {
                 if(labels[i] == "major" || labels[i] == "minor") {
-                    buildContext.getScriptEngine().sh "echo found ${labels[i]}"
                     bump = labels[i];
                     break;
                 }
             }
         }
 
-        return bumpMapping[bump];
+        return bumpMapping[bump].trim();
     }
 
 
