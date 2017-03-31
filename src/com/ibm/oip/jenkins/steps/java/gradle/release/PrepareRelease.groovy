@@ -32,9 +32,7 @@ class PrepareRelease extends AbstractGradleStep {
             def output = buildContext.getScriptEngine().sh("curl -X GET -H 'Authorization: token ${buildContext.getScriptEngine().env.GITHUB_OAUTH_TOKEN}' \$GITHUB_API_URL/repos/${buildContext.getGroup()}/${buildContext.getProject()}/issues/${prNumber}/labels | jq -r '.[].name' > labels.txt")
             def labels = []
             String labelFile = buildContext.getScriptEngine().readFile 'labels.txt'
-            labels = labelFile.split("\\n");
-            buildContext.getScriptEngine().sh "echo ${labels}"
-            labels.any { label ->
+            labels.forEach { label ->
                 if (label == "major" || label == "minor") {
                     buildContext.getScriptEngine().sh "echo 'found major or minor'"
                     bump = label;
