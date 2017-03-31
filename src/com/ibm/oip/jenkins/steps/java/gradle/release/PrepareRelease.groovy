@@ -28,13 +28,18 @@ class PrepareRelease extends AbstractGradleStep {
         buildContext.getScriptEngine() withCredentials([[$class: 'StringBinding', credentialsId: "${buildContext.getGroup()}-sonarqube-github-reporter", variable: 'GITHUB_OAUTH_TOKEN_NEW']]) {
             buildContext.getScriptEngine().sh "curl -H 'Authorization: token cd96d479772924b4ab66d30e1235e43f1241496a' \$GITHUB_API_URL/repos/${buildContext.getGroup()}/${buildContext.getProject()}/issues/${prNumber}/labels | jq -r '.[].name' > labels.txt"
 
+            buildContext.getScriptEngine().sh "echo before loading labels"
             String[] labels = new File('labels.txt')
+            buildContext.getScriptEngine().sh "echo after loading labels"
             def version = "patch";
             labels.any { label ->
                 if (label == "major" || label == "minor") {
+                    buildContext.getScriptEngine().sh "tag is major or minor"
                     version = label;
                     return true;
                 }
+
+                buildContext.getScriptEngine().sh "tag is NOT major or minor"
             }
         }
 
