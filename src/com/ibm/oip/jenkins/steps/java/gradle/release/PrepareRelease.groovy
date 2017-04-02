@@ -22,7 +22,7 @@ class PrepareRelease extends AbstractGradleStep {
     }
 
     public String determineVersionDump() {
-        def prNumber = retrievePrId()
+        def prNumber = retrievePrId(buildContext.getCommitMessage())
         if (!prNumber) {
             return "Patch"
         }
@@ -44,13 +44,9 @@ class PrepareRelease extends AbstractGradleStep {
     }
 
 
-    @NonCPS
-    String retrievePrId() {
-        def pr = buildContext.getCommitMessage() =~ ".*Merge pull request #(\\d+).*"
-        if (pr.groupCount() == 0) {
-            return null;
-        }
-        return pr.group(1)
+    def retrievePrId(commitMsg) {
+        def pr = commitMsg =~ ".*Merge pull request #(\\d+).*"
+        pr ? pr[0][1] : null
     }
 
     private void prepareRelease(buildContext, versionBump) {
