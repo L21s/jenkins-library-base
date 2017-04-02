@@ -50,7 +50,7 @@ class PrepareRelease extends AbstractGradleStep {
         if (pr.groupCount() == 0) {
             return null;
         }
-        return pr[0][1];
+        return pr.group(1)
     }
 
     private void prepareRelease(buildContext, versionBump) {
