@@ -24,7 +24,7 @@ class PrepareRelease extends AbstractGradleStep {
     public String determineVersionDump() {
         def prNumber = retrievePrId(buildContext.getCommitMessage())
         if (!prNumber) {
-            return "Patch"
+            return "patch"
         }
 
         def bump = "patch";
