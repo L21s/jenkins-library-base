@@ -47,7 +47,7 @@ class PrepareRelease extends AbstractGradleStep {
     @NonCPS
     String retrievePrId() {
         def pr = buildContext.getCommitMessage() =~ ".*Merge pull request #(\\d+).*"
-        if (!pr.hasGroup()) {
+        if (pr.length == 0) {
             return null;
         }
         return pr[0][1];
