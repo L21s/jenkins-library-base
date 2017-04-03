@@ -1,0 +1,23 @@
+repositories {
+    mavenCentral()
+}
+
+apply plugin: 'groovy'
+
+sourceSets {
+    main {
+        groovy {
+            srcDirs = ['src']
+        }
+    }
+
+    test {
+        groovy {
+            srcDirs = ['test']
+        }
+    }
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.3.6'
+}
