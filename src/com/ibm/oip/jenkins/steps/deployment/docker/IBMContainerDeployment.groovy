@@ -6,7 +6,7 @@ import com.ibm.oip.jenkins.steps.Step
 class IBMContainerDeployment implements Step {
     private String targetEnvironment;
 
-    public CloudFoundryDeployment(String targetEnvironment) {
+    public IBMContainerDeployment(String targetEnvironment) {
         this.targetEnvironment = targetEnvironment;
     }
 
