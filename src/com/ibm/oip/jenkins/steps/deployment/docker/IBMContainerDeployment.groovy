@@ -22,7 +22,6 @@ class IBMContainerDeployment implements Step {
             def oldGroupId = buildContext.getScriptEngine().sh(script: "cf ic group list | awk '\$2 ~ /${buildContext.getProject()}/ {print \$1}'", returnStdout: true);
             buildContext.getScriptEngine().sh "cf ic group create --name ${buildContext.getProject()}-${buildContext.getCommitId()} -p 8080 --min 2 --auto \$DOCKER_REGISTRY_URL/${buildContext.getProject()}:${buildContext.getVersion()}";
             buildContext.getScriptEngine().sh "cf ic route map -n ${buildContext.getProject()} -d gcloud.eu-de.mybluemix.net ${buildContext.getProject()}-${buildContext.getCommitId()}";
-            buildContext.getScriptEngine().sh "cf ic route unmap -n ${buildContext.getProject()} -d gcloud.eu-de.mybluemix.net ${oldGroupId}"
             buildContext.getScriptEngine().sh "cf ic group rm ${oldGroupId}"
 
         }
