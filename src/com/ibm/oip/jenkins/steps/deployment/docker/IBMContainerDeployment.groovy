@@ -11,7 +11,6 @@ class IBMContainerDeployment implements Step {
     }
 
     public void doStep(BuildContext buildContext) {
-        def version = buildContext.version.substring(2)
         buildContext.changeStage("Deploy to IBM Containers")
         buildContext.getScriptEngine().withCredentials([
                 [$class: 'UsernamePasswordMultiBinding', credentialsId: "${buildContext.getGroup()}-nexus", usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD'],
