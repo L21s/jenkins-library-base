@@ -17,11 +17,8 @@ class CreatePushContainer implements Step {
             buildContext.getScriptEngine().sh "cf login -u ${buildContext.getScriptEngine().env.CLOUD_FOUNDRY_USERNAME} -p ${buildContext.getScriptEngine().env.CLOUD_FOUNDRY_PASSWORD} -a \$BLUEMIX_API_URL"
             buildContext.getScriptEngine().sh "cf ic login"
             buildContext.getScriptEngine().sh "docker push \$DOCKER_REGISTRY_URL/${project}:${version}";
-            buildContext.getScriptEngine().sh "docker push \$DOCKER_REGISTRY_URL/${project}:latest";
-
             // delete the images from jenkins
             buildContext.getScriptEngine().sh "docker rmi \$DOCKER_REGISTRY_URL/${project}:${version}";
-            buildContext.getScriptEngine().sh "docker rmi \$DOCKER_REGISTRY_URL/${project}:latest";
         }
     }
 }
