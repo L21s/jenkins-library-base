@@ -7,6 +7,6 @@ class FinishRelease extends AbstractGradleStep {
     void doStep(BuildContext buildContext) {
         buildContext.changeStage('Publish release');
         buildContext.getScriptEngine().sh ("git push --tags");
-        doGradleStep(buildContext, "publish");
+        doGradleStep(buildContext, "publish --stracktrace");
     }
 }
