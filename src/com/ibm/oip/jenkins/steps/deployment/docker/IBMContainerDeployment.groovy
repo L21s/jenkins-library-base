@@ -1,4 +1,4 @@
-package com.ibm.oip.jenkins.ega.steps.deployment.docker
+package com.ibm.oip.jenkins.steps.deployment.docker
 
 import com.ibm.oip.jenkins.BuildContext
 import com.ibm.oip.jenkins.steps.Step
@@ -19,7 +19,12 @@ class IBMContainerDeployment implements Step {
             buildContext.getScriptEngine().sh "cf login -u ${buildContext.getScriptEngine().env.CLOUD_FOUNDRY_USERNAME} -p ${buildContext.getScriptEngine().env.CLOUD_FOUNDRY_PASSWORD} -a https://api.gcloud.eu-de.bluemix.net"
             buildContext.getScriptEngine().sh "cf ic login"
 
-            // do sth to acutally deploy
+            def oldGroupId = buildContext.getScriptEngine().sh(script: "cf ic group list | awk '\$2 ~ /${buildContext.getProject()}/ {print \$1}'", returnStdout: true);
+            buildContext.getScriptEngine().sh "cf ic group create --name ${buildContext.getProject()}-${buildContext.getCommitId()} -p 8080 --min 2 --auto \$DOCKER_REGISTRY_URL/${buildContext.getProject()}:${buildContext.getVersion()}";
+            buildContext.getScriptEngine().sh "cf ic route map -n ${buildContext.getProject()} -d gcloud.eu-de.mybluemix.net ${buildContext.getProject()}-${buildContext.getCommitId()}";
+            buildContext.getScriptEngine().sh "cf ic route unmap -n ${buildContext.getProject()} -d gcloud.eu-de.mybluemix.net ${oldGroupId}"
+            buildContext.getScriptEngine().sh "cf ic group rm ${oldGroupId}"
+
         }
     }
 }

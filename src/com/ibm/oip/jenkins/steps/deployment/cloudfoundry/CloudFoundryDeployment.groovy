@@ -1,4 +1,4 @@
-package com.ibm.oip.jenkins.ega.steps.deployment.cloudfoundry
+package com.ibm.oip.jenkins.steps.deployment.cloudfoundry
 
 import com.ibm.oip.jenkins.BuildContext
 import com.ibm.oip.jenkins.steps.Step

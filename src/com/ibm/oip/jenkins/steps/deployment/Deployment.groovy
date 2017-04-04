@@ -1,8 +1,8 @@
 package com.ibm.oip.jenkins.steps.deployment
 
 import com.ibm.oip.jenkins.steps.Step
-import com.ibm.oip.jenkins.ega.steps.deployment.cloudfoundry.*;
-import com.ibm.oip.jenkins.ega.steps.deployment.docker.*
+import com.ibm.oip.jenkins.steps.deployment.cloudfoundry.CloudFoundryDeployment
+import com.ibm.oip.jenkins.steps.deployment.docker.IBMContainerDeployment
 
 class Deployment {
     public static Step CLOUDFOUNDRY(String targetEnv) {
