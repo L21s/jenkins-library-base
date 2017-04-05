@@ -21,7 +21,7 @@ class KubernetesDeployment implements Step {
             buildContext.getScriptEngine().sh "export KUBECONFIG=${extractPath(exportStatement)}";
             buildContext.getScriptEngine().sh "kubectl set image deployment/${buildContext.getProject()} ${buildContext.getProject()}=\$DOCKER_REGISTRY_URL/${buildContext.getProject()}:${buildContext.getVersion()}";
             // clean up
-            buildContext.getScriptEngine().sh "export KUBECONFIG=";
+            buildContext.geutScriptEngine().sh "export KUBECONFIG=";
             buildContext.getScriptEngine().sh "rm -rf ${extractPath(exportStatement)}";
 
 

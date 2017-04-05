@@ -7,7 +7,7 @@ class IntegrationTest extends AbstractGradleStep {
 
     void doStep(BuildContext buildContext) {
         buildContext.changeStage('Integration test');
-        def reportDir = 'build/reports/integrationTest';
+        def reportDir = 'build/reports/tests/integrationTest';
         try {
             doGradleStep(buildContext, "-x test integrationTest")
         } finally {

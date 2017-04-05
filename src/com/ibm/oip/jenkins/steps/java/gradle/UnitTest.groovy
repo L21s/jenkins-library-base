@@ -17,7 +17,7 @@ class UnitTest extends AbstractGradleStep {
     }
 
     private void publishTestResults() {
-        def reportDir = 'build/reports/test';
+        def reportDir = 'build/reports/tests/test';
         if (!buildContext.getScriptEngine().fileExists("${reportDir}") ){
             println "${reportDir} does not exist, not publishing anything."
             return
