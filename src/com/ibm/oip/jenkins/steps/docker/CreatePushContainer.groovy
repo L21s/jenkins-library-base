@@ -12,13 +12,12 @@ class CreatePushContainer implements Step {
         buildContext.getScriptEngine().sh "docker build -t \$DOCKER_REGISTRY_URL/${project}:${version} -t \$DOCKER_REGISTRY_URL/${project}:latest .";
 
         buildContext.getScriptEngine().withCredentials([
-                [$class: 'UsernamePasswordMultiBinding', credentialsId: "${buildContext.getGroup()}-cloudfoundry", usernameVariable: 'CLOUD_FOUNDRY_USERNAME', passwordVariable: 'CLOUD_FOUNDRY_PASSWORD']]) {
-            buildContext.changeStage('Push Container');
-            buildContext.getScriptEngine().sh "cf login -u ${buildContext.getScriptEngine().env.CLOUD_FOUNDRY_USERNAME} -p ${buildContext.getScriptEngine().env.CLOUD_FOUNDRY_PASSWORD} -a \$BLUEMIX_API_URL"
-            buildContext.getScriptEngine().sh "cf ic login"
-            buildContext.getScriptEngine().sh "docker push \$DOCKER_REGISTRY_URL/${project}:${version}";
-            // delete the images from jenkins
-            buildContext.getScriptEngine().sh "docker rmi \$DOCKER_REGISTRY_URL/${project}:${version}";
+                [$class: 'UsernamePasswordMultiBinding', credentialsId: "${buildContext.getGroup()}-docker-registry", usernameVariable: 'DOCKER_REGISTRY_USERNAME', passwordVariable: 'DOCKER_REGISTRY_PASSWORD']]) {
+
+            buildContext.getScriptEngine().sh "docker login -u \$DOCKER_REGISTRY_USERNAME bearer -p \$DOCKER_REGISTRY_PASSWORD"
         }
+        buildContext.getScriptEngine().sh "docker push \$DOCKER_REGISTRY_URL/${project}:${version}";
+        // delete the images from jenkins
+        buildContext.getScriptEngine().sh "docker rmi \$DOCKER_REGISTRY_URL/${project}:${version}";
     }
 }
