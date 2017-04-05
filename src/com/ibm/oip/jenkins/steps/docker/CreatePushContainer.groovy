@@ -14,7 +14,7 @@ class CreatePushContainer implements Step {
         buildContext.getScriptEngine().withCredentials([
                 [$class: 'UsernamePasswordMultiBinding', credentialsId: "${buildContext.getGroup()}-docker-registry", usernameVariable: 'DOCKER_REGISTRY_USERNAME', passwordVariable: 'DOCKER_REGISTRY_PASSWORD']]) {
 
-            buildContext.getScriptEngine().sh "docker login -u \$DOCKER_REGISTRY_USERNAME bearer -p \$DOCKER_REGISTRY_PASSWORD"
+            buildContext.getScriptEngine().sh "docker login -u \$DOCKER_REGISTRY_USERNAME bearer -p \$DOCKER_REGISTRY_PASSWORD \$DOCKER_REGISTRY_URL"
         }
         buildContext.getScriptEngine().sh "docker push \$DOCKER_REGISTRY_URL/${project}:${version}";
         // delete the images from jenkins
