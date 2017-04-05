@@ -3,9 +3,10 @@ package com.ibm.oip.jenkins.steps.java.gradle;
 import com.ibm.oip.jenkins.BuildContext;
 import com.ibm.oip.jenkins.steps.Step;
 
-public class PublishArtifacts extends AbstractGradleStep {
+class PublishArtifacts extends AbstractGradleStep {
     @Override
     public void doStep(BuildContext buildContext) {
         doGradleStep(buildContext, "publish");
     }
 }
+
