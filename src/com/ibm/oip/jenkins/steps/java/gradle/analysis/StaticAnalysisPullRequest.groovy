@@ -14,11 +14,9 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
 
     void doStep(BuildContext buildContext) {
         buildContext.changeStage('Static analysis');
-
         def secrets = [
                 [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/tools/sonarqube", secretValues: [
-                        [$class: 'VaultSecretValue', envVar: 'SONARQUBE_USERNAME', vaultKey: 'username'],
-                        [$class: 'VaultSecretValue', envVar: 'SONARQUBEPASSWORD', vaultKey: 'password'],
+                        [$class: 'VaultSecretValue', envVar: 'SONARQUBE_TOKEN', vaultKey: 'api_token'],
                         [$class: 'VaultSecretValue', envVar: 'GITHUB_OAUTH_TOKEN', vaultKey: 'github_token']]]
         ]
         buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
@@ -29,8 +27,7 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
                     "-Dsonar.github.repository=${buildContext.group}/${buildContext.project} " +
                     "-Dsonar.github.oauth=${buildContext.getScriptEngine().env.GITHUB_OAUTH_TOKEN} " +
                     "-Dsonar.host.url=\$SONARQUBE_URL " +
-                    "-Dsonar.login=${buildContext.getScriptEngine().env.SONARQUBE_USERNAME} " +
-                    "-Dsonar.password=${buildContext.getScriptEngine().env.SONARQUBE_PASSWORD} ")
+                    "-Dsonar.login=${buildContext.getScriptEngine().env.SONARQUBE_TOKEN} ")
 
             // Code Coverage
             doGradleStep(buildContext, "coverageTestReport")

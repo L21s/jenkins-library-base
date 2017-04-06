@@ -15,15 +15,13 @@ class StaticAnalysis extends AbstractGradleStep {
 
         def secrets = [
                 [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/tools/sonarqube", secretValues: [
-                        [$class: 'VaultSecretValue', envVar: 'USERNAME', vaultKey: 'username'],
-                        [$class: 'VaultSecretValue', envVar: 'PASSWORD', vaultKey: 'password']]]
+                        [$class: 'VaultSecretValue', envVar: 'SONARQUBE_TOKEN', vaultKey: 'api_token']]]
         ]
         buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
             doGradleStep(buildContext, "sonarqube " +
                     "-Dsonar.buildbreaker.skip=$skip " +
                     "-Dsonar.host.url=\$SONARQUBE_URL " +
-                    "-Dsonar.login='${buildContext.getScriptEngine().env.USERNAME}' " +
-                    "-Dsonar.password='${buildContext.getScriptEngine().env.PASSWORD}' " +
+                    "-Dsonar.login='${buildContext.getScriptEngine().env.SONARQUBE_TOKEN}' " +
                     "-Dsonar.jacoco.itReportPath=build/jacoco/integrationTest.exec -Dsonar.jacoco.reportPath=build/jacoco/test.exec");
             // The last line should acutally not be needed since SQ 6.2 - but without it does not recognize the coverage
         }
