@@ -13,8 +13,11 @@ class KubernetesDeployment implements Step {
 
     @Override
     void doStep(BuildContext buildContext) {
-        buildContext.getScriptEngine().withCredentials([
-                [$class: 'StringBinding', credentialsId: "${buildContext.getGroup()}-bx-cli-apikey", variable: 'BX_CLI_APIKEY']]) {
+        def secrets = [
+                [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/environments/dev/deployment/kubernetes", secretValues: [
+                        [$class: 'VaultSecretValue', envVar: 'BX_CLI_APIKEY', vaultKey: 'api_key']]]
+        ]
+        buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
             buildContext.getScriptEngine().sh "bx login --apikey \$BX_CLI_APIKEY"
             def exportStatement = buildContext.getScriptEngine().sh(script: "bx cs cluster-config \$BX_K8S_CLUSTER_NAME | tail -n1", returnStdout: true);
 
@@ -23,9 +26,6 @@ class KubernetesDeployment implements Step {
             // clean up
             buildContext.geutScriptEngine().sh "export KUBECONFIG=";
             buildContext.getScriptEngine().sh "rm -rf ${extractPath(exportStatement)}";
-
-
-
         }
     }
 

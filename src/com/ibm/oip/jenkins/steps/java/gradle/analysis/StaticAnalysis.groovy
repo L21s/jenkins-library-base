@@ -13,8 +13,12 @@ class StaticAnalysis extends AbstractGradleStep {
     void doStep(BuildContext buildContext) {
         buildContext.changeStage('Static analysis');
 
-        buildContext.getScriptEngine().withCredentials([
-                            [$class: 'UsernamePasswordMultiBinding', credentialsId: "${buildContext.getGroup()}-sonarqube", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+        def secrets = [
+                [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/tools/sonarqube", secretValues: [
+                        [$class: 'VaultSecretValue', envVar: 'USERNAME', vaultKey: 'username'],
+                        [$class: 'VaultSecretValue', envVar: 'PASSWORD', vaultKey: 'password']]]
+        ]
+        buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
             doGradleStep(buildContext, "sonarqube " +
                     "-Dsonar.buildbreaker.skip=$skip " +
                     "-Dsonar.host.url=\$SONARQUBE_URL " +

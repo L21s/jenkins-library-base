@@ -10,8 +10,12 @@ abstract class AbstractGradleStep implements Step {
     }
 
     void doGradleStep(BuildContext buildContext, String gradleCommand, String switches) {
-        buildContext.getScriptEngine().withCredentials([
-                [$class: 'UsernamePasswordMultiBinding', credentialsId: buildContext.getGroup() + '-nexus', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+        def secrets = [
+                [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/tools/nexus", secretValues: [
+                        [$class: 'VaultSecretValue', envVar: 'USERNAME', vaultKey: 'username'],
+                        [$class: 'VaultSecretValue', envVar: 'PASSWORD', vaultKey: 'password']]]
+                ]
+        buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
             buildContext.getScriptEngine().sh("./gradlew ${gradleCommand} -PrepositoryUsername=${buildContext.getScriptEngine().env.USERNAME} -PrepositoryPassword=${buildContext.getScriptEngine().env.PASSWORD} -PnexusUsername=${buildContext.getScriptEngine().env.USERNAME} -PnexusPassword=${buildContext.getScriptEngine().env.PASSWORD} ${switches}");
         }
     }

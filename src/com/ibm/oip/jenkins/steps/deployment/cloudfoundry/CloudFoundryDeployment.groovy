@@ -13,9 +13,15 @@ class CloudFoundryDeployment implements Step {
     public void doStep(BuildContext buildContext) {
         def version = buildContext.version.substring(2)
         buildContext.changeStage("Deploy to CF")
-        buildContext.getScriptEngine().withCredentials([
-                [$class: 'UsernamePasswordMultiBinding', credentialsId: "${buildContext.getGroup()}-nexus", usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD'],
-                [$class: 'UsernamePasswordMultiBinding', credentialsId: "${buildContext.getGroup()}-cloudfoundry", usernameVariable: 'CLOUD_FOUNDRY_USERNAME', passwordVariable: 'CLOUD_FOUNDRY_PASSWORD']]) {
+        def secrets = [
+                [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/environments/dev/deployment/cloudfoundry", secretValues: [
+                        [$class: 'VaultSecretValue', envVar: 'CLOUD_FOUNDRY_USERNAME', vaultKey: 'username'],
+                        [$class: 'VaultSecretValue', envVar: 'CLOUD_FOUNDRY_PASSWORD', vaultKey: 'password']]],
+                [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/environments/tools/nexus", secretValues: [
+                        [$class: 'VaultSecretValue', envVar: 'NEXUS_USERNAME', vaultKey: 'username'],
+                        [$class: 'VaultSecretValue', envVar: 'NEXUS_PASSWORD', vaultKey: 'password']]]
+        ]
+        buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
             // fetch distZip from Nexus
             buildContext.getScriptEngine().sh "wget --user ${buildContext.getScriptEngine().env.NEXUS_USERNAME} --password ${buildContext.getScriptEngine().env.NEXUS_PASSWORD} https://nexus.open-insurance-platform.com/repository/tk-releases/com/ibm/ega/${buildContext.project}/${version}/${buildContext.project}-${version}.zip -O deployment.zip"
             // fetch manifest.yml from Nexus

@@ -15,8 +15,13 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
     void doStep(BuildContext buildContext) {
         buildContext.changeStage('Static analysis');
 
-        buildContext.getScriptEngine() withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: "${buildContext.getGroup()}-sonarqube", usernameVariable: 'SONARQUBE_USERNAME', passwordVariable: 'SONARQUBE_PASSWORD'],
-                                                       [$class: 'StringBinding', credentialsId: "${buildContext.getGroup()}-sonarqube-github-reporter", variable: 'GITHUB_OAUTH_TOKEN']]) {
+        def secrets = [
+                [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/tools/sonarqube", secretValues: [
+                        [$class: 'VaultSecretValue', envVar: 'SONARQUBE_USERNAME', vaultKey: 'username'],
+                        [$class: 'VaultSecretValue', envVar: 'SONARQUBEPASSWORD', vaultKey: 'password'],
+                        [$class: 'VaultSecretValue', envVar: 'GITHUB_OAUTH_TOKEN', vaultKey: 'github_token']]]
+        ]
+        buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
             def prNumber = buildContext.branch.replace("PR-", "");
             doGradleStep(buildContext, "sonarqube " +
                     "-Dsonar.analysis.mode=preview " +
@@ -55,7 +60,6 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
             }
 
             notifyGithubCoverageStatus(buildContext, prNumber, status)
-
         }
     }
 

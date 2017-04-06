@@ -12,9 +12,12 @@ class IBMContainerDeployment implements Step {
 
     public void doStep(BuildContext buildContext) {
         buildContext.changeStage("Deploy to IBM Containers")
-        buildContext.getScriptEngine().withCredentials([
-                [$class: 'UsernamePasswordMultiBinding', credentialsId: "${buildContext.getGroup()}-nexus", usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD'],
-                [$class: 'UsernamePasswordMultiBinding', credentialsId: "${buildContext.getGroup()}-cloudfoundry", usernameVariable: 'CLOUD_FOUNDRY_USERNAME', passwordVariable: 'CLOUD_FOUNDRY_PASSWORD']]) {
+        def secrets = [
+                [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/environments/dev/deployment/cloudfoundry", secretValues: [
+                        [$class: 'VaultSecretValue', envVar: 'CLOUD_FOUNDRY_USERNAME', vaultKey: 'username'],
+                        [$class: 'VaultSecretValue', envVar: 'CLOUD_FOUNDRY_PASSWORD', vaultKey: 'password']]]
+        ]
+        buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
             buildContext.getScriptEngine().sh "cf login -u ${buildContext.getScriptEngine().env.CLOUD_FOUNDRY_USERNAME} -p ${buildContext.getScriptEngine().env.CLOUD_FOUNDRY_PASSWORD} -a https://api.gcloud.eu-de.bluemix.net"
             buildContext.getScriptEngine().sh "cf ic login"
 
@@ -23,7 +26,6 @@ class IBMContainerDeployment implements Step {
             buildContext.getScriptEngine().sh "cf ic route map -n ${buildContext.getProject()} -d gcloud.eu-de.mybluemix.net ${buildContext.getProject()}-${buildContext.getVersion()}";
             buildContext.getScriptEngine().sh "sleep 120"
             buildContext.getScriptEngine().sh "cf ic group rm ${oldGroupId}"
-
         }
     }
 }

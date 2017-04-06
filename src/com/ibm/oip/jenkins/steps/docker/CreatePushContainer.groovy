@@ -4,16 +4,19 @@ import com.ibm.oip.jenkins.BuildContext
 import com.ibm.oip.jenkins.steps.Step
 
 class CreatePushContainer implements Step {
-
     public void doStep(BuildContext buildContext) {
         buildContext.changeStage('Build Container');
         def project = buildContext.getProject();
         def version = buildContext.getVersion();
         buildContext.getScriptEngine().sh "docker build -t \$DOCKER_REGISTRY_URL/${project}:${version} -t \$DOCKER_REGISTRY_URL/${project}:latest .";
 
-        buildContext.getScriptEngine().withCredentials([
-                [$class: 'UsernamePasswordMultiBinding', credentialsId: "${buildContext.getGroup()}-docker-registry", usernameVariable: 'DOCKER_REGISTRY_USERNAME', passwordVariable: 'DOCKER_REGISTRY_PASSWORD']]) {
-            buildContext.getScriptEngine().sh "docker login -u \$DOCKER_REGISTRY_USERNAME -p \$DOCKER_REGISTRY_PASSWORD \$DOCKER_REGISTRY_URL"
+        def secrets = [
+                [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/tools/docker-registry", secretValues: [
+                        [$class: 'VaultSecretValue', envVar: 'USERNAME', vaultKey: 'username'],
+                        [$class: 'VaultSecretValue', envVar: 'PASSWORD', vaultKey: 'password']]]
+        ]
+        buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
+            buildContext.getScriptEngine().sh "docker login -u \$USERNAME -p \$PASSWORD \$DOCKER_REGISTRY_URL"
         }
         buildContext.getScriptEngine().sh "docker push \$DOCKER_REGISTRY_URL/${project}:${version}";
         // delete the images from jenkins
