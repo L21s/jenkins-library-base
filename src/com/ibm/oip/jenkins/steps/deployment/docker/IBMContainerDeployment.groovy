@@ -13,7 +13,7 @@ class IBMContainerDeployment implements Step {
     public void doStep(BuildContext buildContext) {
         buildContext.changeStage("Deploy to IBM Containers")
         def secrets = [
-                [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/environments/dev/deployment/cloudfoundry", secretValues: [
+                [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/environments/dev/deployment/bluemix", secretValues: [
                         [$class: 'VaultSecretValue', envVar: 'CLOUD_FOUNDRY_USERNAME', vaultKey: 'username'],
                         [$class: 'VaultSecretValue', envVar: 'CLOUD_FOUNDRY_PASSWORD', vaultKey: 'password']]]
         ]

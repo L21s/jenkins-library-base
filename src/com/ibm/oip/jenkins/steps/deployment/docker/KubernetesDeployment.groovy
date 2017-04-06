@@ -14,7 +14,7 @@ class KubernetesDeployment implements Step {
     @Override
     void doStep(BuildContext buildContext) {
         def secrets = [
-                [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/environments/dev/deployment/kubernetes", secretValues: [
+                [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/environments/dev/deployment/bluemix", secretValues: [
                         [$class: 'VaultSecretValue', envVar: 'BX_CLI_APIKEY', vaultKey: 'api_key']]]
         ]
         buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {

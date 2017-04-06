@@ -14,7 +14,7 @@ class CloudFoundryDeployment implements Step {
         def version = buildContext.version.substring(2)
         buildContext.changeStage("Deploy to CF")
         def secrets = [
-                [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/environments/dev/deployment/cloudfoundry", secretValues: [
+                [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/environments/dev/deployment/bluemix", secretValues: [
                         [$class: 'VaultSecretValue', envVar: 'CLOUD_FOUNDRY_USERNAME', vaultKey: 'username'],
                         [$class: 'VaultSecretValue', envVar: 'CLOUD_FOUNDRY_PASSWORD', vaultKey: 'password']]],
                 [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/environments/tools/nexus", secretValues: [
