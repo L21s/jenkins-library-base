@@ -41,6 +41,7 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
             } catch(err) {
                 coverageResult = extractCoverage(gradleOutput);
 
+                buildContext.getScriptEngine().sh "echo ${gradleOutput}"
                 if(coverageResult == null) {
                     throw new RuntimeException("Could not extract coverage information, but coverage target failed")
                 }
@@ -84,7 +85,11 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
     @NonCPS
     def extractCoverage(gradleOutput) {
         def matcher = gradleOutput =~ "> Rule violated for bundle dropwizard-sample: instructions covered ratio is (\\d.\\d+), but expected minimum is (\\d.\\d+)";
-        
+
+        if(!matcher) {
+            return null;
+        }
+
         CoverageResult result = new CoverageResult();
         result.result = Double.valueOf(matcher[0][1]) * 100;
         result.target = Double.valueOf(matcher[0][2]) * 100;
