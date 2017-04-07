@@ -40,6 +40,10 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
                 gradleOutput = doGradleStepReturnOutput(buildContext, "jacocoTestCoverageVerification");
             } catch(err) {
                 coverageResult = extractCoverage(gradleOutput);
+
+                if(coverageResult == null) {
+                    throw new RuntimeException("Could not extract coverage information, but coverage target failed")
+                }
                 coverageTargetFailed = true;
             }
 
@@ -86,8 +90,8 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
         }
 
         CoverageResult result = new CoverageResult();
-        result.result = matcher[0][1];
-        result.target = matcher[0][2];
+        result.result = Double.valueOf(matcher[0][1]);
+        result.target = Double.valueOf(matcher[0][2]);
         return result;
     }
 }
