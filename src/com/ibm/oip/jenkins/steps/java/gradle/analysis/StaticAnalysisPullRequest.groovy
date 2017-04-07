@@ -47,7 +47,7 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
             status.target_url = buildContext.jobUrl + "Coverage_Report";
             status.context = "code-coverage"
             if(coverageTargetFailed) {
-                status.description = "Coverage was: ${coverageResult.result}% (Target: ${coverageResult.target}%) - failing.";
+                status.description = "Coverage was: ${coverageResult.result * 100 }% (Target: ${coverageResult.target * 100}%) - failing.";
                 status.state = "failure";
             } else {
                 status.description = "Code coverage looks good - success.";
