@@ -29,7 +29,7 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
                     "-Dsonar.github.repository=${buildContext.group}/${buildContext.project} " +
                     "-Dsonar.github.oauth=${buildContext.getScriptEngine().env.GITHUB_OAUTH_TOKEN} " +
                     "-Dsonar.host.url=\$SONARQUBE_URL " +
-                    "-Dsonar.login=${buildContext.getScriptEngine().env.SONARQUBE_TOKEN} ")
+                    "-Dsonar.login=${buildContext.getScriptEngine().env.SONARQUBE_TOKEN} ", "--stacktrace")
 
             // Code Coverage
             doGradleStep(buildContext, "jacocoTestReport")
