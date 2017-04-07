@@ -32,8 +32,8 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
                     "-Dsonar.login=${buildContext.getScriptEngine().env.SONARQUBE_TOKEN} ")
 
             // Code Coverage
-            doGradleStep(buildContext, "coverageTestReport")
-            buildContext.getScriptEngine().publishHTML(target: [allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: "build/jacocoHtml", reportFiles: 'index.html', reportName: 'Coverage Report'])
+            doGradleStep(buildContext, "jacocoTestReport")
+            buildContext.getScriptEngine().publishHTML(target: [allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: "build/reports/jacoco/test/html", reportFiles: 'index.html', reportName: 'Coverage Report'])
 
 
             def coverageResult;
