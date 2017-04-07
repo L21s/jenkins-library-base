@@ -51,7 +51,7 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
             status.target_url = buildContext.jobUrl + "Coverage_Report";
             status.context = "code-coverage"
             if(coverageTargetFailed) {
-                status.description = "Coverage was: ${coverageResult.result * 100 }% (Target: ${coverageResult.target * 100}%) - failing.";
+                status.description = "Coverage was: ${coverageResult.result}% (Target: ${coverageResult.target}%) - failing.";
                 status.state = "failure";
             } else {
                 status.description = "Code coverage looks good - success.";
@@ -84,14 +84,10 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
     @NonCPS
     def extractCoverage(gradleOutput) {
         def matcher = gradleOutput =~ "> Rule violated for bundle dropwizard-sample: instructions covered ratio is (\\d.\\d+), but expected minimum is (\\d.\\d+)";
-
-        if(!matcher) {
-            return null;
-        }
-
+        
         CoverageResult result = new CoverageResult();
-        result.result = Double.valueOf(matcher[0][1]);
-        result.target = Double.valueOf(matcher[0][2]);
+        result.result = Double.valueOf(matcher[0][1]) * 100;
+        result.target = Double.valueOf(matcher[0][2]) * 100;
         return result;
     }
 }
