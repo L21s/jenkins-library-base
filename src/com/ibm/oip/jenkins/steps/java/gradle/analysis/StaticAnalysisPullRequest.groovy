@@ -5,6 +5,8 @@ import com.ibm.oip.jenkins.steps.java.gradle.AbstractGradleStep
 import groovy.json.JsonOutput
 
 class StaticAnalysisPullRequest extends AbstractGradleStep {
+    def gradleOutput;
+
     static class GithubStatus implements Serializable {
         String state;
         String target_url;
@@ -33,7 +35,7 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
             doGradleStep(buildContext, "coverageTestReport")
             buildContext.getScriptEngine().publishHTML(target: [allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: "build/jacocoHtml", reportFiles: 'index.html', reportName: 'Coverage Report'])
 
-            def gradleOutput;
+
             def coverageResult;
             def coverageTargetFailed = false;
             try {
