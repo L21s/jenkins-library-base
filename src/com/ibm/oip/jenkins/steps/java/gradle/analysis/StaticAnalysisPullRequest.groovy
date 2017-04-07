@@ -33,26 +33,24 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
             doGradleStep(buildContext, "coverageTestReport")
             buildContext.getScriptEngine().publishHTML(target: [allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: "build/jacocoHtml", reportFiles: 'index.html', reportName: 'Coverage Report'])
 
-            def htmlReport = buildContext.getScriptEngine().readFile 'build/jacocoHtml/index.html';
-            def overallCoverageText = extractCoverage(htmlReport)
-            def overallCoverage = Integer.parseInt(overallCoverageText.substring(0, overallCoverageText.length() - 1))
-
-            def target;
-            if (buildContext.getScriptEngine().fileExists('.coverage')) {
-                target = Integer.parseInt(buildContext.getScriptEngine().readFile('.coverage').trim())
-            } else {
-                target = 80;
+            def gradleOutput;
+            def coverageResult;
+            def coverageTargetFailed = false;
+            try {
+                gradleOutput = doGradleStepReturnOutput(buildContext, "jacocoTestCoverageVerification");
+            } catch(err) {
+                coverageResult = extractCoverage(gradleOutput);
+                coverageTargetFailed = true;
             }
 
             def status = new GithubStatus();
             status.target_url = buildContext.jobUrl + "Coverage_Report";
             status.context = "code-coverage"
-            if (overallCoverage < target) {
-                status.description = "Coverage was: ${overallCoverage}% (Target: ${target}%) - failing.";
+            if(coverageTargetFailed) {
+                status.description = "Coverage was: ${coverageResult.result}% (Target: ${coverageResult.target}%) - failing.";
                 status.state = "failure";
-
             } else {
-                status.description = "Coverage was: ${overallCoverage}% (Target: ${target}%) - success.";
+                status.description = "Code coverage looks good - success.";
                 status.state = "success";
             }
 
@@ -73,11 +71,23 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
                 "\$GITHUB_API_URL/repos/${buildContext.group}/${buildContext.project}/statuses/${retrieveGithubCommitId(buildContext, prNumber)}";
     }
 
-    def extractCoverage(htmlReport) {
-        XmlSlurper slurper = new XmlSlurper();
-        slurper.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
-        slurper.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+    static class CoverageResult implements  Serializable {
+        def result;
 
-        return slurper.parseText(htmlReport).body.table.tfoot.tr.td[2].text();
+        def target;
+    }
+
+    @NonCPS
+    def extractCoverage(gradleOutput) {
+        def matcher = gradleOutput = "> Rule violated for bundle dropwizard-sample: instructions covered ratio is (\\d.\\d+), but expected minimum is (\\d.\\d+)";
+
+        if(!matcher) {
+            return null;
+        }
+
+        CoverageResult result = new CoverageResult();
+        result.result = matcher[0][1];
+        result.target = matcher[1][1];
+        return result;
     }
 }
