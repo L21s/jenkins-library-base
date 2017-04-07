@@ -79,7 +79,7 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
 
     @NonCPS
     def extractCoverage(gradleOutput) {
-        def matcher = gradleOutput = "> Rule violated for bundle dropwizard-sample: instructions covered ratio is (\\d.\\d+), but expected minimum is (\\d.\\d+)";
+        def matcher = gradleOutput =~ "> Rule violated for bundle dropwizard-sample: instructions covered ratio is (\\d.\\d+), but expected minimum is (\\d.\\d+)";
 
         if(!matcher) {
             return null;
@@ -87,7 +87,7 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
 
         CoverageResult result = new CoverageResult();
         result.result = matcher[0][1];
-        result.target = matcher[1][1];
+        result.target = matcher[0][2];
         return result;
     }
 }
