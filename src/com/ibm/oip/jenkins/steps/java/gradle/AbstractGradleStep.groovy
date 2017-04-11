@@ -17,11 +17,14 @@ abstract class AbstractGradleStep implements Step {
                         [$class: 'VaultSecretValue', envVar: 'PASSWORD', vaultKey: 'password']]]
         ]
         buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
-            output = buildContext.getScriptEngine().sh( script: "./gradlew ${gradleCommand} -PrepositoryUsername=${buildContext.getScriptEngine().env.USERNAME} -PrepositoryPassword=${buildContext.getScriptEngine().env.PASSWORD} -PnexusUsername=${buildContext.getScriptEngine().env.USERNAME} -PnexusPassword=${buildContext.getScriptEngine().env.PASSWORD}",
-                                                        returnStdOut: true);
+            buildContext.getScriptEngine().sh( script: "./gradlew ${gradleCommand} " +
+                    "-PrepositoryUsername=${buildContext.getScriptEngine().env.USERNAME} " +
+                    "-PrepositoryPassword=${buildContext.getScriptEngine().env.PASSWORD} " +
+                    "-PnexusUsername=${buildContext.getScriptEngine().env.USERNAME} " +
+                    "-PnexusPassword=${buildContext.getScriptEngine().env.PASSWORD} > gradle-command-output");
         }
 
-        return output;
+        return readFile("gradle-command-output").trim();
     }
 
     void doGradleStep(BuildContext buildContext, String gradleCommand, String switches) {
