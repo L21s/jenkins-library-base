@@ -21,7 +21,7 @@ abstract class AbstractGradleStep implements Step {
         }
         def result = new GradleCommandResult();
         result.setStatusCode(statusCode);
-        result.setOutput(readFile("gradle-command-output").trim());
+        result.setOutput(buildContext.getScriptEngine().readFile("gradle-command-output").trim());
         return result;
     }
 
