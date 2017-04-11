@@ -5,7 +5,7 @@ import com.ibm.oip.jenkins.steps.java.gradle.AbstractGradleStep
 import groovy.json.JsonOutput
 
 class StaticAnalysisPullRequest extends AbstractGradleStep {
-    def gradleOutput;
+    def gradleResult;
 
     static class GithubStatus implements Serializable {
         String state;
@@ -38,12 +38,11 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
 
             def coverageResult;
             def coverageTargetFailed = false;
-            try {
-                gradleOutput = doGradleStepReturnOutput(buildContext, "jacocoTestCoverageVerification");
-            } catch(err) {
-                coverageResult = extractCoverage(gradleOutput);
+            gradleResult = doGradleStepReturnOutput(buildContext, "jacocoTestCoverageVerification");
+            if(gradleResult.statusCode != 0) {
+                coverageResult = extractCoverage(gradleResult.getOutput());
 
-                buildContext.getScriptEngine().sh "echo ${gradleOutput}"
+                buildContext.getScriptEngine().sh "echo ${gradleResult.getOutput()}"
                 if(coverageResult == null) {
                     throw new RuntimeException("Could not extract coverage information, but coverage target failed")
                 }
