@@ -21,7 +21,7 @@ abstract class AbstractGradleStep implements Step {
                     "-PrepositoryUsername=${buildContext.getScriptEngine().env.USERNAME} " +
                     "-PrepositoryPassword=${buildContext.getScriptEngine().env.PASSWORD} " +
                     "-PnexusUsername=${buildContext.getScriptEngine().env.USERNAME} " +
-                    "-PnexusPassword=${buildContext.getScriptEngine().env.PASSWORD} > gradle-command-output");
+                    "-PnexusPassword=${buildContext.getScriptEngine().env.PASSWORD} &> gradle-command-output");
         }
 
         return readFile("gradle-command-output").trim();
