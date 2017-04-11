@@ -10,17 +10,16 @@ abstract class AbstractGradleStep implements Step {
     }
 
     String doGradleStepReturnOutput(BuildContext buildContext, String gradleCommand) {
-        def output;
         def secrets = [
                 [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/tools/nexus", secretValues: [
                         [$class: 'VaultSecretValue', envVar: 'USERNAME', vaultKey: 'username'],
                         [$class: 'VaultSecretValue', envVar: 'PASSWORD', vaultKey: 'password']]]
         ]
         buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
-            buildContext.getScriptEngine().sh("./gradlew ${gradleCommand} -PrepositoryUsername=${buildContext.getScriptEngine().env.USERNAME} -PrepositoryPassword=${buildContext.getScriptEngine().env.PASSWORD} -PnexusUsername=${buildContext.getScriptEngine().env.USERNAME} -PnexusPassword=${buildContext.getScriptEngine().env.PASSWORD} > gradle-command-output");
+            buildContext.getScriptEngine().sh(script: "./gradlew ${gradleCommand} -PrepositoryUsername=${buildContext.getScriptEngine().env.USERNAME} -PrepositoryPassword=${buildContext.getScriptEngine().env.PASSWORD} -PnexusUsername=${buildContext.getScriptEngine().env.USERNAME} -PnexusPassword=${buildContext.getScriptEngine().env.PASSWORD} &> gradle-command-output", returnStatus:true);
         }
 
-        return readFile("gradle-command-output").trim();
+        return buildContext.getScriptEngine().readFile("gradle-command-output").trim();
     }
 
     void doGradleStep(BuildContext buildContext, String gradleCommand, String switches) {
