@@ -42,7 +42,6 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
             if(gradleResult.statusCode != 0) {
                 coverageResult = extractCoverage(gradleResult.getOutput());
 
-                buildContext.getScriptEngine().sh "echo ${gradleResult.getOutput()}"
                 if(coverageResult == null) {
                     throw new RuntimeException("Could not extract coverage information, but coverage target failed")
                 }
