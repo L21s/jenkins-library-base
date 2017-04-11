@@ -19,7 +19,7 @@ abstract class AbstractGradleStep implements Step {
         buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
             statusCode = buildContext.getScriptEngine().sh(script: "./gradlew ${gradleCommand} -PrepositoryUsername=${buildContext.getScriptEngine().env.USERNAME} -PrepositoryPassword=${buildContext.getScriptEngine().env.PASSWORD} -PnexusUsername=${buildContext.getScriptEngine().env.USERNAME} -PnexusPassword=${buildContext.getScriptEngine().env.PASSWORD} > gradle-command-output 2>&1", returnStatus:true);
         }
-        result = new GradleCommandResult();
+        def result = new GradleCommandResult();
         result.setStatusCode(statusCode);
         result.setOutput(readFile("gradle-command-output").trim());
         return result;
