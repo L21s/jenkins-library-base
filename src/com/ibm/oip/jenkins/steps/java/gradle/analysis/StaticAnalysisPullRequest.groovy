@@ -5,7 +5,7 @@ import com.ibm.oip.jenkins.steps.java.gradle.AbstractGradleStep
 import groovy.json.JsonOutput
 
 class StaticAnalysisPullRequest extends AbstractGradleStep {
-    def gradleOutput;
+    def gradleResult;
 
     static class GithubStatus implements Serializable {
         String state;
@@ -38,12 +38,10 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
 
             def coverageResult;
             def coverageTargetFailed = false;
-            try {
-                gradleOutput = doGradleStepReturnOutput(buildContext, "jacocoTestCoverageVerification");
-            } catch(err) {
-                coverageResult = extractCoverage(gradleOutput);
+            gradleResult = doGradleStepReturnOutput(buildContext, "jacocoTestCoverageVerification");
+            if(gradleResult.statusCode != 0) {
+                coverageResult = extractCoverage(gradleResult.getOutput());
 
-                buildContext.getScriptEngine().sh "echo ${gradleOutput}"
                 if(coverageResult == null) {
                     throw new RuntimeException("Could not extract coverage information, but coverage target failed")
                 }
@@ -86,7 +84,7 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
 
     @NonCPS
     def extractCoverage(gradleOutput) {
-        def matcher = gradleOutput =~ "> Rule violated for bundle dropwizard-sample: instructions covered ratio is (\\d.\\d+), but expected minimum is (\\d.\\d+)";
+        def matcher = gradleOutput =~ "> Rule violated for bundle .*?: instructions covered ratio is (\\d.\\d+), but expected minimum is (\\d.\\d+)";
 
         if(!matcher) {
             return null;
