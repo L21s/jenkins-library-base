@@ -3,7 +3,6 @@ package com.ibm.oip.jenkins.steps.deployment.docker
 import com.ibm.oip.jenkins.BuildContext
 import com.ibm.oip.jenkins.steps.Step
 import com.ibm.oip.jenkins.util.FileTemplater
-import groovy.io.FileType
 
 class KubernetesDeployment implements Step {
     private String targetEnvironment;
@@ -34,9 +33,9 @@ class KubernetesDeployment implements Step {
     }
 
     void replaceVersionInAllKubernetesFiles() {
-        def dir = new File("kubernetes/")
-        dir.eachFile (FileType.FILES) { file ->
-            FileTemplater templater = new FileTemplater(buildContext, file);
+        def yamls = buildContext.getScriptEngine().findFiles(glob: "kubernetes/*.yml");
+        yamls.each() { file ->
+            FileTemplater templater = new FileTemplater(buildContext, file.path);
             templater.template("%VERSION%", buildContext.getVersion());
         }
     }
