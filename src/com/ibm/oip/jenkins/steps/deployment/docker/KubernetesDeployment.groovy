@@ -33,18 +33,15 @@ class KubernetesDeployment implements Step {
     }
 
     void replaceVersionInAllKubernetesFiles() {
-        def yamls = buildContext.getScriptEngine().findFiles(glob: "kubernetes/*.yml");
-        yamls.each() { file ->
-            FileTemplater templater = new FileTemplater(buildContext, file.path);
-            templater.template("%VERSION%", buildContext.getVersion());
-        }
+        FileTemplater templater = new FileTemplater(buildContext, "kubernetes/application.yml");
+        templater.template("%VERSION%", buildContext.getVersion());
     }
 
     void kubectl(String cmd) {
         buildContext.getScriptEngine().sh("kubectl " +
-                                        "--namespace ${buildContext.getScriptEngine().env.NAMESPACE} " +
-                                        "--server ${buildContext.getScriptEngine().env.MASTER_URL} " +
-                                        "--token ${buildContext.getScriptEngine().env.KUBERNETES_TOKEN} " +
-                                        "${cmd}");
+                "--namespace ${buildContext.getScriptEngine().env.NAMESPACE} " +
+                "--server ${buildContext.getScriptEngine().env.MASTER_URL} " +
+                "--token ${buildContext.getScriptEngine().env.KUBERNETES_TOKEN} " +
+                "${cmd}");
     }
 }
