@@ -41,7 +41,7 @@ class KubernetesDeployment implements Step {
     void kubectl(String cmd) {
         buildContext.getScriptEngine().sh("kubectl " +
                 "--namespace ${buildContext.getScriptEngine().env.NAMESPACE} " +
-                "--certificate-authority ${buildContext.getScriptEngine().env.KUBERNETES_CA}" +
+                "--certificate-authority ${buildContext.getScriptEngine().env.KUBERNETES_CA} " +
                 "--server ${buildContext.getScriptEngine().env.MASTER_URL} " +
                 "--token ${buildContext.getScriptEngine().env.KUBERNETES_TOKEN} " +
                 "${cmd}");
