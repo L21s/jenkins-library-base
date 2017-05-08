@@ -17,8 +17,8 @@ class KubernetesDeployment implements Step {
     void doStep(BuildContext buildContext) {
         this.buildContext = buildContext;
         buildContext.getScriptEngine().configFileProvider(
-                [buildContext.getScriptEngine().configFile(fileId: "kubernetes-${targetEnvironment}", variable: 'KUBERNETES_CONFIG')],
-                [buildContext.getScriptEngine().configFile(fileId: "kubernetes-${targetEnvironment}-pem", variable: 'KUBERNETES_CA')]) {
+                [buildContext.getScriptEngine().configFile(fileId: "kubernetes-${targetEnvironment}", variable: 'KUBERNETES_CONFIG'),
+                 buildContext.getScriptEngine().configFile(fileId: "kubernetes-${targetEnvironment}-pem", variable: 'KUBERNETES_CA')]) {
             def variables = buildContext.getScriptEngine().load buildContext.getScriptEngine().env.KUBERNETES_CONFIG
             buildContext.getScriptEngine().withEnv(variables) {
                 def secrets = [
