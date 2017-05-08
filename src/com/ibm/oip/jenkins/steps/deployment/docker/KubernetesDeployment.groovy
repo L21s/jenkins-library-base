@@ -27,6 +27,7 @@ class KubernetesDeployment implements Step {
                 ]
                 buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
                     replaceVersionInAllKubernetesFiles();
+                    buildContext.getScriptEngine().sh("cat kubernetes/application.yml");
                     kubectl("apply -f kubernetes/");
                 }
             }
