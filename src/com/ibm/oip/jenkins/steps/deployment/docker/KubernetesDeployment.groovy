@@ -5,6 +5,7 @@ import com.ibm.oip.jenkins.steps.Step
 
 class KubernetesDeployment implements Step {
     private String targetEnvironment;
+    private BuildContext buildContext;
 
     public KubernetesDeployment(String targetEnvironment) {
         this.targetEnvironment = targetEnvironment;
@@ -13,25 +14,27 @@ class KubernetesDeployment implements Step {
 
     @Override
     void doStep(BuildContext buildContext) {
-        def secrets = [
-                [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/environments/dev/deployment/bluemix", secretValues: [
-                        [$class: 'VaultSecretValue', envVar: 'BX_CLI_APIKEY', vaultKey: 'api_key']]]
-        ]
-        buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
-            buildContext.getScriptEngine().sh "bx login --apikey \$BX_CLI_APIKEY"
-            def exportStatement = buildContext.getScriptEngine().sh(script: "bx cs cluster-config \$BX_K8S_CLUSTER_NAME | tail -n1", returnStdout: true);
-
-            buildContext.getScriptEngine().sh "export KUBECONFIG=${extractPath(exportStatement)}";
-            buildContext.getScriptEngine().sh "kubectl set image deployment/${buildContext.getProject()} ${buildContext.getProject()}=\$DOCKER_REGISTRY_URL/${buildContext.getProject()}:${buildContext.getVersion()}";
-            // clean up
-            buildContext.geutScriptEngine().sh "export KUBECONFIG=";
-            buildContext.getScriptEngine().sh "rm -rf ${extractPath(exportStatement)}";
+        this.buildContext = buildContext;
+        buildContext.getScriptEngine().configFileProvider(
+                [buildContext.getScriptEngine().configFile(fileId: "kubernetes-${targetEnvironment}", variable: 'KUBERNETES_CONFIG')]) {
+            def variables = buildContext.getScriptEngine().load buildContext.getScriptEngine().env.KUBERNETES_CONFIG
+            buildContext.getScriptEngine().withEnv(variables) {
+                def secrets = [
+                        [$class: 'VaultSecret', path: "${buildContext.getScriptEngine().env.TOKEN_VAULT_PATH}", secretValues: [
+                                [$class: 'VaultSecretValue', envVar: 'KUBERNETES_TOKEN', vaultKey: 'token']]]
+                ]
+                buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
+                    kubectl("apply -f kubernetes/");
+                }
+            }
         }
     }
 
-    @NonCPS
-    String extractPath(def exportStatement) {
-        def configPath = exportStatement = ".*=(.*)";~
-        configPath ? configPath[0][1] : null
+    void kubectl(String cmd) {
+        buildContext.getScriptEngine().sh("kubectl " +
+                                        "--namespace ${buildContext.getScriptEngine().env.NAMESPACE} " +
+                                        "--server ${buildContext.getScriptEngine().env.MASTER_URL} " +
+                                        "--token ${buildContext.getScriptEngine().env.KUBERNETES_TOKEN} " +
+                                        "${cmd}");
     }
 }
