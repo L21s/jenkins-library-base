@@ -17,7 +17,8 @@ class KubernetesDeployment implements Step {
     void doStep(BuildContext buildContext) {
         this.buildContext = buildContext;
         buildContext.getScriptEngine().configFileProvider(
-                [buildContext.getScriptEngine().configFile(fileId: "kubernetes-${targetEnvironment}", variable: 'KUBERNETES_CONFIG')]) {
+                [buildContext.getScriptEngine().configFile(fileId: "kubernetes-${targetEnvironment}", variable: 'KUBERNETES_CONFIG')],
+                [buildContext.getScriptEngine().configFile(fileId: "kubernetes-${targetEnvironment}-pem", variable: 'KUBERNETES_CA')]) {
             def variables = buildContext.getScriptEngine().load buildContext.getScriptEngine().env.KUBERNETES_CONFIG
             buildContext.getScriptEngine().withEnv(variables) {
                 def secrets = [
@@ -40,8 +41,10 @@ class KubernetesDeployment implements Step {
     void kubectl(String cmd) {
         buildContext.getScriptEngine().sh("kubectl " +
                 "--namespace ${buildContext.getScriptEngine().env.NAMESPACE} " +
+                "--certificate-authority ${buildContext.getScriptEngine().env.KUBERNETES_CA}" +
                 "--server ${buildContext.getScriptEngine().env.MASTER_URL} " +
                 "--token ${buildContext.getScriptEngine().env.KUBERNETES_TOKEN} " +
                 "${cmd}");
+
     }
 }
