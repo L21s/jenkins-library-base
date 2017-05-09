@@ -36,6 +36,7 @@ class KubernetesDeployment implements Step {
     void replaceVersionInAllKubernetesFiles() {
         FileTemplater templater = new FileTemplater(buildContext, "kubernetes/application.yml");
         templater.template("%VERSION%", buildContext.getVersion().trim());
+        templater.template("%NAMESPACE%", ${buildContext.getScriptEngine().env.NAMESPACE});
     }
 
     void kubectl(String cmd) {
