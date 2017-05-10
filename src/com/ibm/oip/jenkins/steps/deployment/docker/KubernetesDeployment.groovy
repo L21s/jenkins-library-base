@@ -27,7 +27,6 @@ class KubernetesDeployment implements Step {
                 ]
                 buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
                     replaceVersionInAllKubernetesFiles();
-                    buildContext.getScriptEngine().sh("cat kubernetes/application.yml");
                     kubectl("apply -f kubernetes/");
                 }
             }
@@ -37,6 +36,7 @@ class KubernetesDeployment implements Step {
     void replaceVersionInAllKubernetesFiles() {
         FileTemplater templater = new FileTemplater(buildContext, "kubernetes/application.yml");
         templater.template("%VERSION%", buildContext.getVersion().trim());
+        templater.template("%NAMESPACE%", ${buildContext.getScriptEngine().env.NAMESPACE});
     }
 
     void kubectl(String cmd) {
