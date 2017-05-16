@@ -10,7 +10,7 @@ class Pipeline implements Serializable {
     }
 
     public void run(buildContext) {
-        buildContext.getScriptEngine().node {
+        buildContext.getScriptEngine().node(buildContext.nodeLabel) {
             buildContext.getScriptEngine().ws(buildContext.getProject() + "-workspace") {
                 buildContext.getScriptEngine().configFileProvider(
                         [buildContext.getScriptEngine().configFile(fileId: "${buildContext.getGroup()}-config", variable: 'PROJECT_CONFIG')]) {

@@ -12,6 +12,8 @@ class PipelineRunner  implements Serializable {
 
     private Object env;
 
+    private Object nodeLabel;
+
     def customProperties = [];
 
     private Boolean slack = true;
@@ -44,6 +46,11 @@ class PipelineRunner  implements Serializable {
         return this;
     }
 
+    public PipelineRunner onNode(Object nodeLabel) {
+        this.nodeLabel = nodeLabel;
+        return this;
+    }
+
     public PipelineRunner notifySlackOnError(Boolean slack) {
         this.slack = slack;
         return this;
@@ -56,6 +63,7 @@ class PipelineRunner  implements Serializable {
             if(this.pipelines[i].canBuild(branch)) {
                 try {
                     buildContext = BuildContext.create(scriptEngine, customProperties, branch);
+                    buildContext.setNodeLabel(this.nodeLabel);
                     this.pipelines[i].run(buildContext);
                 } catch(err) {
                     handleFailure(buildContext);
