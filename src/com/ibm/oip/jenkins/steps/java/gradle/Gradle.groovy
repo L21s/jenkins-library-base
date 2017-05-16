@@ -13,7 +13,7 @@ class Gradle implements Serializable {
     public static Step UNIT_TEST = new UnitTest();
     public static Step INTEGRATION_TEST = new IntegrationTest();
     public static Step FINISH_RELEASE = new FinishRelease();
-    public static Step STATIC_ANALYSIS = new StaticAnalysis();
+    public static Step STATIC_ANALYSIS = new StaticAnalysis(false);
     public static Step STATIC_ANALYSIS_PR = new StaticAnalysisPullRequest();
 
     public static Step STATIC_ANALYSIS(boolean skip) {
