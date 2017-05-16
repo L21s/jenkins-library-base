@@ -31,6 +31,8 @@ class BuildContext implements Serializable {
 
     def branch;
 
+    def nodeLabel;
+
     public static BuildContext create(scriptEngine, customProperties, branch) {
         BuildContext result = new BuildContext();
         result.scriptEngine = scriptEngine;
