@@ -20,7 +20,7 @@ class PrepareRelease extends AbstractGradleStep {
 
     void doStep(BuildContext buildContext) {
         this.buildContext = buildContext;
-        prepareRelease(buildContext, bumpMapping[versionBumpDeterminer.determineVersionDump()].trim());
+        prepareRelease(buildContext, bumpMapping[versionBumpDeterminer.determineVersionDump(buildContext)].trim());
 
         def nextVersion = retrieveNextVersion();
         buildContext.getScriptEngine().currentBuild.displayName = nextVersion;
