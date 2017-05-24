@@ -9,7 +9,7 @@ class GithubPRLabelVersionBumpDeterminer implements VersionBumpDeterminer {
     String determineVersionDump(BuildContext buildContext) {
         def prNumber = retrievePrId(buildContext.getCommitMessage())
         if (!prNumber) {
-            return bumpMapping["patch"].trim()
+            return "patch";
         }
 
         def bump = "patch";
