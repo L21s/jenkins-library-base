@@ -37,7 +37,7 @@ class KubernetesDeployment implements Step {
         FileTemplater templater = new FileTemplater(buildContext, "kubernetes/application.yml");
         templater.template("%VERSION%", buildContext.getVersion().trim());
         templater.template("%NAMESPACE%", buildContext.getScriptEngine().env.NAMESPACE);
-        templater.template("INGRESS_BASE_URL", buildContext.getScriptEngine().env.INGRESS_BASE_URL);
+        templater.template("%INGRESS_BASE_URL%", buildContext.getScriptEngine().env.INGRESS_BASE_URL);
     }
 
     void kubectl(String cmd) {
