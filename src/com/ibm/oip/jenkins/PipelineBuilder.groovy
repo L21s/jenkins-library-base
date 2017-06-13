@@ -1,5 +1,7 @@
 package com.ibm.oip.jenkins
 
+import java.util.regex.Pattern
+
 class PipelineBuilder implements Serializable {
     private Pipeline pipeline = new Pipeline();
 
@@ -10,6 +12,16 @@ class PipelineBuilder implements Serializable {
 
     public PipelineBuilder forAnyButMaster() {
         pipeline.setPattern(~/^(?!^master$).*$/);
+        return this;
+    }
+
+    public PipelineBuilder forBranchByName(String branchName) {
+        pipeline.setPattern(~/^(?!^${branchName}$).*$/);
+        return this;
+    }
+
+    public PipelineBuilder forBranchByPattern(Pattern pattern) {
+        pipeline.setPattern(pattern);
         return this;
     }
 
