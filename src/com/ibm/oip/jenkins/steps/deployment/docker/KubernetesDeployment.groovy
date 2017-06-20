@@ -46,7 +46,6 @@ class KubernetesDeployment implements Step {
                 "--certificate-authority ${buildContext.getScriptEngine().env.KUBERNETES_CA} " +
                 "--server ${buildContext.getScriptEngine().env.MASTER_URL} " +
                 "--token ${buildContext.getScriptEngine().env.KUBERNETES_TOKEN} " +
-                "--validate=false " + 
                 "${cmd}");
 
     }
