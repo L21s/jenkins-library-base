@@ -1,5 +1,6 @@
 package com.ibm.oip.jenkins.steps.java.gradle.analysis
 
+import com.cloudbees.groovy.cps.NonCPS
 import com.ibm.oip.jenkins.BuildContext
 import com.ibm.oip.jenkins.steps.java.gradle.AbstractGradleStep
 import groovy.json.JsonOutput
