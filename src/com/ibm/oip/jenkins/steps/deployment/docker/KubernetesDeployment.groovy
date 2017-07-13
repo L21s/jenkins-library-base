@@ -27,7 +27,7 @@ class KubernetesDeployment implements Step {
                 ]
                 buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
                     templateApplicationYml();
-                    kubectl("apply -f kubernetes/");
+                    kubectl("--validate=false apply -f kubernetes/");
                 }
             }
         }
