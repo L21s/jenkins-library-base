@@ -16,6 +16,7 @@ class KubernetesDeployment implements Step {
     @Override
     void doStep(BuildContext buildContext) {
         this.buildContext = buildContext;
+        buildContext.changeStage("Deploy to Kubernetes")
         buildContext.getScriptEngine().configFileProvider(
                 [buildContext.getScriptEngine().configFile(fileId: "kubernetes-${targetEnvironment}", variable: 'KUBERNETES_CONFIG'),
                  buildContext.getScriptEngine().configFile(fileId: "kubernetes-${targetEnvironment}-pem", variable: 'KUBERNETES_CA')]) {
