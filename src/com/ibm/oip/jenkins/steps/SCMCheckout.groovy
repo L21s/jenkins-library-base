@@ -8,7 +8,7 @@ class SCMCheckout implements Step {
         buildContext.getScriptEngine().checkout([
                 $class: 'GitSCM',
                 branches: buildContext.getScriptEngine().scm.branches,
-                extensions: buildContext.getScriptEngine().scm.extensions + [[$class: 'LocalBranch', localBranch: 'master']],
+                extensions: [[$class: 'LocalBranch', localBranch: 'master'], [$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: false]],
                 userRemoteConfigs: buildContext.getScriptEngine().scm.userRemoteConfigs
         ])
 
