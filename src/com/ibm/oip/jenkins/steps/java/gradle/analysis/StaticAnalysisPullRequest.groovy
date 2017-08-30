@@ -1,5 +1,6 @@
 package com.ibm.oip.jenkins.steps.java.gradle.analysis
 
+import com.cloudbees.groovy.cps.NonCPS
 import com.ibm.oip.jenkins.BuildContext
 import com.ibm.oip.jenkins.steps.java.gradle.AbstractGradleStep
 import groovy.json.JsonOutput
@@ -52,7 +53,7 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
             status.target_url = buildContext.jobUrl + "Coverage_Report";
             status.context = "code-coverage"
             if(coverageTargetFailed) {
-                status.description = "Coverage was: ${coverageResult.result}% (Target: ${coverageResult.target}%) - failing.";
+                status.description = "Coverage: ${coverageResult.result}% / ${coverageResult.target}% - failing.";
                 status.state = "failure";
             } else {
                 status.description = "Code coverage looks good - success.";

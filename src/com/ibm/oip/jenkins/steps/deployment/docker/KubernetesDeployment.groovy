@@ -16,6 +16,7 @@ class KubernetesDeployment implements Step {
     @Override
     void doStep(BuildContext buildContext) {
         this.buildContext = buildContext;
+        buildContext.changeStage("Deploy to Kubernetes")
         buildContext.getScriptEngine().configFileProvider(
                 [buildContext.getScriptEngine().configFile(fileId: "kubernetes-${targetEnvironment}", variable: 'KUBERNETES_CONFIG'),
                  buildContext.getScriptEngine().configFile(fileId: "kubernetes-${targetEnvironment}-pem", variable: 'KUBERNETES_CA')]) {
@@ -26,17 +27,18 @@ class KubernetesDeployment implements Step {
                                 [$class: 'VaultSecretValue', envVar: 'KUBERNETES_TOKEN', vaultKey: 'token']]]
                 ]
                 buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
-                    replaceVersionInAllKubernetesFiles();
+                    templateApplicationYml();
                     kubectl("apply -f kubernetes/");
                 }
             }
         }
     }
 
-    void replaceVersionInAllKubernetesFiles() {
+    void templateApplicationYml() {
         FileTemplater templater = new FileTemplater(buildContext, "kubernetes/application.yml");
         templater.template("%VERSION%", buildContext.getVersion().trim());
         templater.template("%NAMESPACE%", buildContext.getScriptEngine().env.NAMESPACE);
+        templater.template("%INGRESS_BASE_URL%", buildContext.getScriptEngine().env.INGRESS_BASE_URL);
     }
 
     void kubectl(String cmd) {

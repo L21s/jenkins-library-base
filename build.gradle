@@ -1,5 +1,6 @@
 repositories {
     mavenCentral()
+    maven { url 'http://repo.jenkins-ci.org/releases/' }
 }
 
 apply plugin: 'groovy'
@@ -20,4 +21,5 @@ sourceSets {
 
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.3.6'
+    compile group: 'org.jenkinsci.plugins', name: 'pipeline-model-definition', version: '1.1.8'
 }

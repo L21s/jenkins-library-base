@@ -1,11 +1,17 @@
 package com.ibm.oip.jenkins.steps.java.gradle.release
 
 import com.ibm.oip.jenkins.BuildContext
+import com.ibm.oip.jenkins.steps.VersionBumpDeterminer
+import com.ibm.oip.jenkins.steps.github.GithubPRLabelVersionBumpDeterminer
 import com.ibm.oip.jenkins.steps.java.gradle.AbstractGradleStep
 
 class PrepareRelease extends AbstractGradleStep {
     private BuildContext buildContext;
+    private VersionBumpDeterminer versionBumpDeterminer;
 
+    PrepareRelease() {
+        this.versionBumpDeterminer = new GithubPRLabelVersionBumpDeterminer();
+    }
     def bumpMapping = [
         "patch": "incrementPatch",
         "minor": "incrementMinor",
@@ -14,43 +20,11 @@ class PrepareRelease extends AbstractGradleStep {
 
     void doStep(BuildContext buildContext) {
         this.buildContext = buildContext;
-        prepareRelease(buildContext, determineVersionDump());
+        prepareRelease(buildContext, bumpMapping[versionBumpDeterminer.determineVersionDump(buildContext)].trim());
 
         def nextVersion = retrieveNextVersion();
         buildContext.getScriptEngine().currentBuild.displayName = nextVersion;
         buildContext.setVersion(nextVersion);
-    }
-
-    public String determineVersionDump() {
-        def prNumber = retrievePrId(buildContext.getCommitMessage())
-        if (!prNumber) {
-            return bumpMapping["patch"].trim()
-        }
-
-        def bump = "patch";
-        def secrets = [
-                [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/tools/sonarqube", secretValues: [
-                        [$class: 'VaultSecretValue', envVar: 'GITHUB_OAUTH_TOKEN', vaultKey: 'github_token']]]
-        ]
-        buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
-            def output = buildContext.getScriptEngine().sh("curl -X GET -H 'Authorization: token ${buildContext.getScriptEngine().env.GITHUB_OAUTH_TOKEN}' \$GITHUB_API_URL/repos/${buildContext.getGroup()}/${buildContext.getProject()}/issues/${prNumber}/labels | jq -r '.[].name' > labels.txt")
-            def labels = buildContext.getScriptEngine().readFile('labels.txt').split("\\n")
-
-            for(int i = 0; i < labels.size(); i++) {
-                if(labels[i] == "major" || labels[i] == "minor") {
-                    bump = labels[i];
-                    break;
-                }
-            }
-        }
-
-        return bumpMapping[bump].trim();
-    }
-
-
-    def retrievePrId(commitMsg) {
-        def pr = commitMsg =~ ".*Merge pull request #(\\d+).*"
-        pr ? pr[0][1] : null
     }
 
     private void prepareRelease(buildContext, versionBump) {
