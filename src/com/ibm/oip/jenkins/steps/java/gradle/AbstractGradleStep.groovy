@@ -17,7 +17,7 @@ abstract class AbstractGradleStep implements Step {
         ]
         def statusCode
         buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
-            statusCode = buildContext.getScriptEngine().sh(script: "./gradlew ${gradleCommand} -PrepositoryUsername=${buildContext.getScriptEngine().env.USERNAME} -PrepositoryPassword=${buildContext.getScriptEngine().env.PASSWORD} -PnexusUsername=${buildContext.getScriptEngine().env.USERNAME} -PnexusPassword=${buildContext.getScriptEngine().env.PASSWORD} > gradle-command-output 2>&1", returnStatus:true);
+            statusCode = buildContext.getScriptEngine().sh(script: "./gradlew ${gradleCommand} --no-daemon -PrepositoryUsername=${buildContext.getScriptEngine().env.USERNAME} -PrepositoryPassword=${buildContext.getScriptEngine().env.PASSWORD} -PnexusUsername=${buildContext.getScriptEngine().env.USERNAME} -PnexusPassword=${buildContext.getScriptEngine().env.PASSWORD} > gradle-command-output 2>&1", returnStatus:true);
         }
         def result = new GradleCommandResult();
         result.setStatusCode(statusCode);
@@ -32,7 +32,7 @@ abstract class AbstractGradleStep implements Step {
                         [$class: 'VaultSecretValue', envVar: 'PASSWORD', vaultKey: 'password']]]
         ]
         buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
-            buildContext.getScriptEngine().sh("./gradlew ${gradleCommand} -PrepositoryUsername=${buildContext.getScriptEngine().env.USERNAME} -PrepositoryPassword=${buildContext.getScriptEngine().env.PASSWORD} -PnexusUsername=${buildContext.getScriptEngine().env.USERNAME} -PnexusPassword=${buildContext.getScriptEngine().env.PASSWORD} ${switches}");
+            buildContext.getScriptEngine().sh("./gradlew ${gradleCommand} --no-daemon -PrepositoryUsername=${buildContext.getScriptEngine().env.USERNAME} -PrepositoryPassword=${buildContext.getScriptEngine().env.PASSWORD} -PnexusUsername=${buildContext.getScriptEngine().env.USERNAME} -PnexusPassword=${buildContext.getScriptEngine().env.PASSWORD} ${switches}");
         }
     }
 }
