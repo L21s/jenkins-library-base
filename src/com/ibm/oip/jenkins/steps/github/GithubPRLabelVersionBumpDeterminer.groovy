@@ -33,7 +33,7 @@ class GithubPRLabelVersionBumpDeterminer implements VersionBumpDeterminer {
     }
 
     def retrievePrId(commitMsg) {
-        def pr = commitMsg =~ ".*Merge pull request #(\\d+).*"
+        def pr = commitMsg =~ ".*#(\\d+).*"
         pr ? pr[0][1] : null
     }
 }
