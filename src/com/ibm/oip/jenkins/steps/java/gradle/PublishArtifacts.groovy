@@ -6,7 +6,7 @@ class PublishArtifacts extends AbstractGradleStep {
     @Override
     public void doStep(BuildContext buildContext) {
         buildContext.changeStage("Publish artifacts")
-        doGradleStep(buildContext, "publishMavenPublicationToMavenRepository");
+        doGradleStep(buildContext, "publish");
     }
 }
 
