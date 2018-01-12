@@ -23,7 +23,6 @@ class UnitTest extends AbstractGradleStep {
             return
         }
         buildContext.getScriptEngine().publishHTML(target : [allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: "${reportDir}", reportFiles: 'index.html', reportName: 'Unit-Test Report'])
-        buildContext.getScriptEngine().step([$class: 'JUnitResultArchiver', testResults: "**/build/test-results/test/*.xml"])
+        buildContext.getScriptEngine().step([$class: 'JUnitResultArchiver', testResults: "**/build/test-results/**/*.xml"])
     }
-
 }
