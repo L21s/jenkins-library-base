@@ -19,7 +19,10 @@ class CreatePushContainer implements Step {
             buildContext.getScriptEngine().sh "docker login -u \$USERNAME -p \$PASSWORD \$DOCKER_REGISTRY_URL"
         }
         buildContext.getScriptEngine().sh "docker push \$DOCKER_REGISTRY_URL/\$DOCKER_REGISTRY_NAMESPACE/${project}:${version}";
+        buildContext.getScriptEngine().sh "docker push \$DOCKER_REGISTRY_URL/\$DOCKER_REGISTRY_NAMESPACE/${project}:latest";
+
         // delete the images from jenkins
         buildContext.getScriptEngine().sh "docker rmi \$DOCKER_REGISTRY_URL/\$DOCKER_REGISTRY_NAMESPACE/${project}:${version}";
+        buildContext.getScriptEngine().sh "docker rmi \$DOCKER_REGISTRY_URL/\$DOCKER_REGISTRY_NAMESPACE/${project}:latest";
     }
 }
