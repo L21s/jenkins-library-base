@@ -20,6 +20,11 @@ class PipelineBuilder implements Serializable {
         return this;
     }
 
+    public PipelineBuilder forBranchByRegex(String regex) {
+        pipeline.setPattern(Pattern.compile(pattern));
+        return this;
+    }
+
     public PipelineBuilder forBranchByPattern(Pattern pattern) {
         pipeline.setPattern(pattern);
         return this;
