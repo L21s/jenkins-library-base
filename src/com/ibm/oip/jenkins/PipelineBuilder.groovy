@@ -21,7 +21,7 @@ class PipelineBuilder implements Serializable {
     }
 
     public PipelineBuilder forBranchByRegex(String regex) {
-        pipeline.setPattern(Pattern.compile(pattern));
+        pipeline.setPattern(Pattern.compile(regex));
         return this;
     }
 
