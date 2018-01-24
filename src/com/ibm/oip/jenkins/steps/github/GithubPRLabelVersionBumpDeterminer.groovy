@@ -5,6 +5,14 @@ import com.ibm.oip.jenkins.steps.VersionBumpDeterminer
 
 class GithubPRLabelVersionBumpDeterminer implements VersionBumpDeterminer {
 
+    def defaultBump = "patch"
+
+    GithubPRLabelVersionBumpDeterminer(def defaultBump) {
+        this.defaultBump = defaultBump
+    }
+
+    GithubPRLabelVersionBumpDeterminer() {}
+
     @Override
     String determineVersionDump(BuildContext buildContext) {
         def prNumber = retrievePrId(buildContext.getCommitMessage())
@@ -12,7 +20,7 @@ class GithubPRLabelVersionBumpDeterminer implements VersionBumpDeterminer {
             return "patch";
         }
 
-        def bump = "patch";
+        def bump = defaultBump
         def secrets = [
                 [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/tools/sonarqube", secretValues: [
                         [$class: 'VaultSecretValue', envVar: 'GITHUB_OAUTH_TOKEN', vaultKey: 'github_token']]]
@@ -22,7 +30,7 @@ class GithubPRLabelVersionBumpDeterminer implements VersionBumpDeterminer {
             def labels = buildContext.getScriptEngine().readFile('labels.txt').split("\\n")
 
             for(int i = 0; i < labels.size(); i++) {
-                if(labels[i] == "major" || labels[i] == "minor") {
+                if(labels[i] == "patch" || labels[i] == "major" || labels[i] == "minor") {
                     bump = labels[i];
                     break;
                 }
