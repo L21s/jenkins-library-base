@@ -61,7 +61,7 @@ class PipelineRunner  implements Serializable {
                     buildContext.setNodeLabel(this.nodeLabel);
                     this.pipelines[i].run(buildContext);
                 } catch(err) {
-                    this.pipelines[i].notifier.notifyFailure(buildContext)
+                    //this.pipelines[i].notifier.notifyFailure(buildContext)
                     buildContext.getScriptEngine().currentBuild.result = 'FAILURE';
                     throw err;
                 }
