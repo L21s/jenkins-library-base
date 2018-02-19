@@ -9,6 +9,10 @@ class PrepareRelease extends AbstractGradleStep {
     private BuildContext buildContext;
     private VersionBumpDeterminer versionBumpDeterminer;
 
+    PrepareRelease(def defaultBump) {
+        this.versionBumpDeterminer = new GithubPRLabelVersionBumpDeterminer(defaultBump);
+    }
+
     PrepareRelease() {
         this.versionBumpDeterminer = new GithubPRLabelVersionBumpDeterminer();
     }

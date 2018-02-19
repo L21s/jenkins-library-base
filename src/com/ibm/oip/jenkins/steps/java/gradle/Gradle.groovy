@@ -17,6 +17,10 @@ class Gradle implements Serializable {
     public static Step STATIC_ANALYSIS = new StaticAnalysis(false);
     public static Step STATIC_ANALYSIS_PR = new StaticAnalysisPullRequest();
 
+    public static Step PREPARE_RELEASE(String bump) {
+        return new PrepareRelease(bump)
+    }
+
     public static Step STATIC_ANALYSIS(boolean skip) {
         return new StaticAnalysis(skip);
     }
