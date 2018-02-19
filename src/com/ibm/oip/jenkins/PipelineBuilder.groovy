@@ -44,18 +44,7 @@ class PipelineBuilder implements Serializable {
         pipeline.notifier = notifier
         return this
     }
-
-    PipelineBuilder notifyViaSlackOnFailure(String channel) {
-        pipeline.notifier = new SlackNotifier()
-        return this
-    }
-
-    PipelineBuilder notifyViaSlackOnFailure() {
-        pipeline.notifier = new SlackNotifier()
-        return this
-    }
-
-
+    
     public PipelineBuilder withSteps(steps) {
        pipeline.setSteps(steps);
        return this; 
