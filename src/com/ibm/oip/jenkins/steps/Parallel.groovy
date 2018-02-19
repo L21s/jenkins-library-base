@@ -2,7 +2,7 @@ package com.ibm.oip.jenkins.steps
 
 import com.ibm.oip.jenkins.BuildContext
 
-class Parallel implements Step {
+class Parallel extends Step {
     private Step[] steps
 
     Parallel(Step... steps) {
@@ -11,9 +11,8 @@ class Parallel implements Step {
 
     @Override
     void doStep(BuildContext buildContext) {
-        def stepCount = 0
         buildContext.getScriptEngine().parallel steps.collectEntries {
-            [(stepCount++): { it.doStep(buildContext) }]
+            ["${it.name()}": { it.doStep(buildContext) }]
         }
     }
 }

@@ -2,7 +2,7 @@ package com.ibm.oip.jenkins.steps;
 
 import com.ibm.oip.jenkins.BuildContext;
 
-class SCMCheckout implements Step {
+class SCMCheckout extends Step {
     public void doStep(BuildContext buildContext) {
         buildContext.changeStage("Checkout");
         buildContext.getScriptEngine().checkout([

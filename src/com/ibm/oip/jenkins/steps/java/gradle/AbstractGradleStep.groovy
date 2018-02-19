@@ -3,7 +3,7 @@ package com.ibm.oip.jenkins.steps.java.gradle;
 import com.ibm.oip.jenkins.BuildContext
 import com.ibm.oip.jenkins.steps.Step
 
-abstract class AbstractGradleStep implements Step {
+abstract class AbstractGradleStep extends Step {
 
     void doGradleStep(BuildContext buildContext, String gradleCommand) {
         doGradleStep(buildContext, gradleCommand, "");
@@ -17,7 +17,7 @@ abstract class AbstractGradleStep implements Step {
         ]
         def statusCode
         buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
-            statusCode = buildContext.getScriptEngine().sh(script: "./gradlew ${gradleCommand} --no-daemon -PrepositoryUsername=${buildContext.getScriptEngine().env.USERNAME} -PrepositoryPassword=${buildContext.getScriptEngine().env.PASSWORD} -PnexusUsername=${buildContext.getScriptEngine().env.USERNAME} -PnexusPassword=${buildContext.getScriptEngine().env.PASSWORD} > gradle-command-output 2>&1", returnStatus:true);
+            statusCode = buildContext.getScriptEngine().sh(script: "./gradlew ${gradleCommand} --no-daemon -PrepositoryUsername=${buildContext.getScriptEngine().env.USERNAME} -PrepositoryPassword=${buildContext.getScriptEngine().env.PASSWORD} -PnexusUsername=${buildContext.getScriptEngine().env.USERNAME} -PnexusPassword=${buildContext.getScriptEngine().env.PASSWORD} > gradle-command-output 2>&1", returnStatus: true);
         }
         def result = new GradleCommandResult();
         result.setStatusCode(statusCode);

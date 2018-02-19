@@ -3,11 +3,11 @@ package com.ibm.oip.jenkins.steps.deployment.docker
 import com.ibm.oip.jenkins.BuildContext
 import com.ibm.oip.jenkins.steps.Step
 
-class IBMContainerDeployment implements Step {
-    private String targetEnvironment;
+class IBMContainerDeployment extends Step {
+    private String targetEnvironment
 
-    public IBMContainerDeployment(String targetEnvironment) {
-        this.targetEnvironment = targetEnvironment;
+    IBMContainerDeployment(String targetEnvironment) {
+        this.targetEnvironment = targetEnvironment
     }
 
     public void doStep(BuildContext buildContext) {

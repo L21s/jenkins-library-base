@@ -39,12 +39,26 @@ Pipeline master = new PipelineBuilder().forMaster().withSteps([
   new Step(){
     void doStep(BuildContext buildContext) {
         buildContext.getScriptEngine().sh "echo 'my custom logic'"
-   }
+    }
+    String name() { "My custom step" }
+  }
 ]).build();
 ```
 
-By implementing the interface `com.ibm.oip.jenkins.steps.Step` you can build custom steps and feed them into the pipeline.
+By implementing the interface `com.ibm.oip.jenkins.steps.Step` you can build custom steps and feed them into the pipeline. The name is used to identify the step during parallel execution.
         
+### Parallel execution
+
+```groovy
+Pipeline master = new PipelineBuilder().forMaster().withSteps([
+  Common.PARALLEL(
+    Gradle.UNIT_TEST,
+    Gradle.STATIC_ANALYSIS_PR
+  )
+]).build();
+
+```
+
 ### Multiple Branches / Pipelines
 
 Normally, when trying to have different logic for different branches your `Jenkinsfile` can become very cluttered as you will usually work with big if-clauses. With this library we are trying to ease that process by defining multiple pipelines that know what they can build - the `PipelineRunner` will than check with every of them if they can build the current branch.
