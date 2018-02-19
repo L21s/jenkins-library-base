@@ -34,6 +34,7 @@ class PipelineBuilder implements Serializable {
         return this;
     }
 
+    @Deprecated
     PipelineBuilder notifyOnFailure() {
         pipeline.notifier = new SlackNotifier()
         return this
@@ -41,6 +42,16 @@ class PipelineBuilder implements Serializable {
 
     PipelineBuilder notifyOnFailure(Notifier notifier) {
         pipeline.notifier = notifier
+        return this
+    }
+
+    PipelineBuilder notifyViaSlackOnFailure(String channel) {
+        pipeline.notifier = new SlackNotifier()
+        return this
+    }
+
+    PipelineBuilder notifyViaSlackOnFailure() {
+        pipeline.notifier = new SlackNotifier()
         return this
     }
 
