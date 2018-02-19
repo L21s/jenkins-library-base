@@ -1,6 +1,7 @@
 package com.ibm.oip.jenkins
 
 import com.ibm.fss.iip.jenkins.notification.*
+import com.ibm.oip.jenkins.notification.Notifier
 import com.ibm.oip.jenkins.notification.SlackNotifier
 
 class PipelineRunner  implements Serializable {
@@ -15,8 +16,6 @@ class PipelineRunner  implements Serializable {
     private Object nodeLabel;
 
     def customProperties = [];
-
-    private Boolean slack = true;
 
     public PipelineRunner() {
     }
@@ -51,11 +50,6 @@ class PipelineRunner  implements Serializable {
         return this;
     }
 
-    public PipelineRunner notifySlackOnError(Boolean slack) {
-        this.slack = slack;
-        return this;
-    }
-
     public void run() {
         def buildContext;
 
@@ -66,18 +60,12 @@ class PipelineRunner  implements Serializable {
                     buildContext.setNodeLabel(this.nodeLabel);
                     this.pipelines[i].run(buildContext);
                 } catch(err) {
-                    handleFailure(buildContext);
+                    this.pipelines[i].notifier.notifyFailure(buildContext)
                     buildContext.getScriptEngine().currentBuild.result = 'FAILURE';
                     throw err;
                 }
                 return;
             }
-        }
-    }
-
-    private void handleFailure(buildContext) {
-        if(slack) {
-            new SlackNotifier().notifyFailure(buildContext);
         }
     }
 }

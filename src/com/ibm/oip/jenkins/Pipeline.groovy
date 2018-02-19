@@ -1,9 +1,14 @@
 package com.ibm.oip.jenkins
 
+import com.ibm.oip.jenkins.notification.Notifier
+import com.ibm.oip.jenkins.notification.NullNotifier
+
 class Pipeline implements Serializable {
     def steps;
 
     def pattern = ~/^.*$/;
+
+    protected Notifier notifier = new NullNotifier();
 
     public boolean canBuild(String branch) {
         return pattern.matcher(branch).matches();

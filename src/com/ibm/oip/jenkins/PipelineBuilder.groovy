@@ -1,5 +1,9 @@
 package com.ibm.oip.jenkins
 
+import com.ibm.oip.jenkins.notification.Notifier
+import com.ibm.oip.jenkins.notification.NullNotifier
+import com.ibm.oip.jenkins.notification.SlackNotifier
+
 import java.util.regex.Pattern
 
 class PipelineBuilder implements Serializable {
@@ -29,6 +33,17 @@ class PipelineBuilder implements Serializable {
         pipeline.setPattern(pattern);
         return this;
     }
+
+    PipelineBuilder notifyOnFailure() {
+        pipeline.notifier = new SlackNotifier()
+        return this
+    }
+
+    PipelineBuilder notifyOnFailure(Notifier notifier) {
+        pipeline.notifier = notifier
+        return this
+    }
+
 
     public PipelineBuilder withSteps(steps) {
        pipeline.setSteps(steps);
