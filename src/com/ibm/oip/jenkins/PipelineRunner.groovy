@@ -54,6 +54,7 @@ class PipelineRunner  implements Serializable {
         def buildContext;
 
         for(int i = 0; i < this.pipelines.length; i++) {
+            scriptEngine.println "bbbb ${this.pipelines.length}"
             if(this.pipelines[i].canBuild(branch)) {
                 try {
                     buildContext = BuildContext.create(scriptEngine, customProperties, branch);
