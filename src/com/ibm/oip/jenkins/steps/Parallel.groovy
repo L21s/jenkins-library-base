@@ -11,10 +11,9 @@ class Parallel implements Step {
 
     @Override
     void doStep(BuildContext buildContext) {
-        buildContext.getScriptEngine().parallel {
-            for (Step step : steps) {
-                step.doStep(buildContext)
-            }
+        def stepCount = 0
+        buildContext.getScriptEngine().parallel steps.collectEntries {
+            [(stepCount++): { it.doStep(buildContext) }]
         }
     }
 }
