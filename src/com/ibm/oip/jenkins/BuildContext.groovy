@@ -63,11 +63,11 @@ class BuildContext implements Serializable {
         this.author = retrieveAuthor(scriptEngine, commitId);
         this.pullRequestCommitId = retrieveLastCommitOfPullRequest(scriptEngine);
     }
-
+    
     def changeStage(String stage, Closure stageClosure) {
         this.stage = stage;
         this.scriptEngine.env.STAGE = stage
-        stageClosure.setDelegate(this.scriptEngine.stage)
+        stageClosure.setDelegate(this.scriptEngine)
         this.scriptEngine.stage(stage, stageClosure)
     }
 
