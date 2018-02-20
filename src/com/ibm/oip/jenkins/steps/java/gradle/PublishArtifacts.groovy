@@ -4,9 +4,10 @@ import com.ibm.oip.jenkins.BuildContext
 
 class PublishArtifacts extends AbstractGradleStep {
     @Override
-    public void doStep(BuildContext buildContext) {
-        buildContext.changeStage("Publish artifacts")
-        doGradleStep(buildContext, "publish");
+    void doStep(BuildContext buildContext) {
+        buildContext.changeStage("Publish artifacts") {
+            doGradleStep(buildContext, "publish")
+        }
     }
 }
 

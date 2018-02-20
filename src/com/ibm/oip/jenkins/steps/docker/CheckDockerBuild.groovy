@@ -8,8 +8,9 @@ class CheckDockerBuild extends Step {
 
     void doStep(BuildContext buildContext) {
         this.buildContext = buildContext
-        buildContext.changeStage('Check: Container-Build');
-        buildContext.getScriptEngine().sh "docker build -t ${buildContext.getCommitId()} ."
-        buildContext.getScriptEngine().sh "docker rmi ${buildContext.getCommitId()}"
+        buildContext.changeStage('Check: Container-Build') {
+            sh "docker build -t ${buildContext.getCommitId()} ."
+            sh "docker rmi ${buildContext.getCommitId()}"
+        }
     }
 }
