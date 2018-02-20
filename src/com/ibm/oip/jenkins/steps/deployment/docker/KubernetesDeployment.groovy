@@ -15,20 +15,21 @@ class KubernetesDeployment extends Step {
 
     @Override
     void doStep(BuildContext buildContext) {
-        this.buildContext = buildContext;
-        buildContext.changeStage("Deploy to Kubernetes")
-        buildContext.getScriptEngine().configFileProvider(
-                [buildContext.getScriptEngine().configFile(fileId: "kubernetes-${targetEnvironment}", variable: 'KUBERNETES_CONFIG'),
-                 buildContext.getScriptEngine().configFile(fileId: "kubernetes-${targetEnvironment}-pem", variable: 'KUBERNETES_CA')]) {
-            def variables = buildContext.getScriptEngine().load buildContext.getScriptEngine().env.KUBERNETES_CONFIG
-            buildContext.getScriptEngine().withEnv(variables) {
-                def secrets = [
-                        [$class: 'VaultSecret', path: "${buildContext.getScriptEngine().env.TOKEN_VAULT_PATH}", secretValues: [
-                                [$class: 'VaultSecretValue', envVar: 'KUBERNETES_TOKEN', vaultKey: 'token']]]
-                ]
-                buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
-                    templateApplicationYml();
-                    kubectl("apply -f kubernetes/")
+        this.buildContext = buildContext
+        buildContext.changeStage("Deploy to Kubernetes") {
+            configFileProvider(
+                    [configFile(fileId: "kubernetes-${targetEnvironment}", variable: 'KUBERNETES_CONFIG'),
+                     configFile(fileId: "kubernetes-${targetEnvironment}-pem", variable: 'KUBERNETES_CA')]) {
+                def variables = load env.KUBERNETES_CONFIG
+                withEnv(variables) {
+                    def secrets = [
+                            [$class: 'VaultSecret', path: "${env.TOKEN_VAULT_PATH}", secretValues: [
+                                    [$class: 'VaultSecretValue', envVar: 'KUBERNETES_TOKEN', vaultKey: 'token']]]
+                    ]
+                    wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
+                        templateApplicationYml();
+                        kubectl("apply -f kubernetes/")
+                    }
                 }
             }
         }
@@ -37,16 +38,16 @@ class KubernetesDeployment extends Step {
     void templateApplicationYml() {
         FileTemplater templater = new FileTemplater(buildContext, "kubernetes/application.yml");
         templater.template("%VERSION%", buildContext.getVersion().trim())
-        templater.template("%NAMESPACE%", buildContext.getScriptEngine().env.NAMESPACE)
-        templater.template("%INGRESS_BASE_URL%", buildContext.getScriptEngine().env.INGRESS_BASE_URL)
+        templater.template("%NAMESPACE%", env.NAMESPACE)
+        templater.template("%INGRESS_BASE_URL%", env.INGRESS_BASE_URL)
     }
 
     void kubectl(String cmd) {
-        buildContext.getScriptEngine().sh("kubectl " +
-                "--namespace ${buildContext.getScriptEngine().env.NAMESPACE} " +
-                "--certificate-authority ${buildContext.getScriptEngine().env.KUBERNETES_CA} " +
-                "--server ${buildContext.getScriptEngine().env.MASTER_URL} " +
-                "--token ${buildContext.getScriptEngine().env.KUBERNETES_TOKEN} " +
+        sh("kubectl " +
+                "--namespace ${env.NAMESPACE} " +
+                "--certificate-authority ${env.KUBERNETES_CA} " +
+                "--server ${env.MASTER_URL} " +
+                "--token ${env.KUBERNETES_TOKEN} " +
                 "${cmd}")
 
     }

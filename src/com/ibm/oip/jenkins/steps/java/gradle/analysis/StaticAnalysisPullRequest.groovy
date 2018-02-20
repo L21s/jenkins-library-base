@@ -16,51 +16,52 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
     }
 
     void doStep(BuildContext buildContext) {
-        buildContext.changeStage('Static analysis');
-        def secrets = [
-                [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/tools/sonarqube", secretValues: [
-                        [$class: 'VaultSecretValue', envVar: 'SONARQUBE_TOKEN', vaultKey: 'api_token'],
-                        [$class: 'VaultSecretValue', envVar: 'GITHUB_OAUTH_TOKEN', vaultKey: 'github_token']]]
-        ]
-        buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
-            def prNumber = buildContext.branch.replace("PR-", "");
-            doGradleStep(buildContext, "sonarqube " +
-                    "-Dsonar.analysis.mode=preview " +
-                    "-Dsonar.github.pullRequest=${prNumber} " +
-                    "-Dsonar.github.repository=${buildContext.group}/${buildContext.project} " +
-                    "-Dsonar.github.oauth=${buildContext.getScriptEngine().env.GITHUB_OAUTH_TOKEN} " +
-                    "-Dsonar.host.url=\$SONARQUBE_URL " +
-                    "-Dsonar.login=${buildContext.getScriptEngine().env.SONARQUBE_TOKEN} ", "--stacktrace")
+        buildContext.changeStage('Static analysis') {
+            def secrets = [
+                    [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/tools/sonarqube", secretValues: [
+                            [$class: 'VaultSecretValue', envVar: 'SONARQUBE_TOKEN', vaultKey: 'api_token'],
+                            [$class: 'VaultSecretValue', envVar: 'GITHUB_OAUTH_TOKEN', vaultKey: 'github_token']]]
+            ]
+            wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
+                def prNumber = buildContext.branch.replace("PR-", "");
+                doGradleStep(buildContext, "sonarqube " +
+                        "-Dsonar.analysis.mode=preview " +
+                        "-Dsonar.github.pullRequest=${prNumber} " +
+                        "-Dsonar.github.repository=${buildContext.group}/${buildContext.project} " +
+                        "-Dsonar.github.oauth=${env.GITHUB_OAUTH_TOKEN} " +
+                        "-Dsonar.host.url=\$SONARQUBE_URL " +
+                        "-Dsonar.login=${env.SONARQUBE_TOKEN} ", "--stacktrace")
 
-            // Code Coverage
-            doGradleStep(buildContext, "jacocoTestReport")
-            buildContext.getScriptEngine().publishHTML(target: [allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: "build/reports/jacoco/test/html", reportFiles: 'index.html', reportName: 'Coverage Report'])
+                // Code Coverage
+                doGradleStep(buildContext, "jacocoTestReport")
+                publishHTML(target: [allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: "build/reports/jacoco/test/html", reportFiles: 'index.html', reportName: 'Coverage Report'])
 
 
-            def coverageResult;
-            def coverageTargetFailed = false;
-            gradleResult = doGradleStepReturnOutput(buildContext, "jacocoTestCoverageVerification");
-            if(gradleResult.statusCode != 0) {
-                coverageResult = extractCoverage(gradleResult.getOutput());
+                def coverageResult;
+                def coverageTargetFailed = false;
+                gradleResult = doGradleStepReturnOutput(buildContext, "jacocoTestCoverageVerification");
+                if (gradleResult.statusCode != 0) {
+                    coverageResult = extractCoverage(gradleResult.getOutput());
 
-                if(coverageResult == null) {
-                    throw new RuntimeException("Could not extract coverage information, but coverage target failed")
+                    if (coverageResult == null) {
+                        throw new RuntimeException("Could not extract coverage information, but coverage target failed")
+                    }
+                    coverageTargetFailed = true;
                 }
-                coverageTargetFailed = true;
-            }
 
-            def status = new GithubStatus();
-            status.target_url = buildContext.jobUrl + "Coverage_Report";
-            status.context = "code-coverage"
-            if(coverageTargetFailed) {
-                status.description = "Coverage: ${coverageResult.result}% / ${coverageResult.target}% - failing.";
-                status.state = "failure";
-            } else {
-                status.description = "Code coverage looks good - success.";
-                status.state = "success";
-            }
+                def status = new GithubStatus();
+                status.target_url = buildContext.jobUrl + "Coverage_Report";
+                status.context = "code-coverage"
+                if (coverageTargetFailed) {
+                    status.description = "Coverage: ${coverageResult.result}% / ${coverageResult.target}% - failing.";
+                    status.state = "failure";
+                } else {
+                    status.description = "Code coverage looks good - success.";
+                    status.state = "success";
+                }
 
-            notifyGithubCoverageStatus(buildContext, prNumber, status)
+                notifyGithubCoverageStatus(buildContext, prNumber, status)
+            }
         }
     }
 
@@ -77,7 +78,7 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
                 "\$GITHUB_API_URL/repos/${buildContext.group}/${buildContext.project}/statuses/${retrieveGithubCommitId(buildContext, prNumber)}";
     }
 
-    static class CoverageResult implements  Serializable {
+    static class CoverageResult implements Serializable {
         def result;
 
         def target;
@@ -87,7 +88,7 @@ class StaticAnalysisPullRequest extends AbstractGradleStep {
     def extractCoverage(gradleOutput) {
         def matcher = gradleOutput =~ "> Rule violated for bundle .*?: instructions covered ratio is (\\d.\\d+), but expected minimum is (\\d.\\d+)";
 
-        if(!matcher) {
+        if (!matcher) {
             return null;
         }
 
