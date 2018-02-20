@@ -9,4 +9,8 @@ class Common {
     public static Step TRIGGER_DEPLOYMENT(String targetEnv) {
         return new TriggerDeployment(targetEnv);
     }
+
+    public static Step PARALLEL(Step... steps) {
+        return new Parallel(steps)
+    }
 }

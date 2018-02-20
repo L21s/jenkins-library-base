@@ -4,12 +4,12 @@ import com.ibm.oip.jenkins.BuildContext
 import com.ibm.oip.jenkins.steps.Step
 import com.ibm.oip.jenkins.util.FileTemplater
 
-class KubernetesDeployment implements Step {
+class KubernetesDeployment extends Step {
     private String targetEnvironment;
     private BuildContext buildContext;
 
-    public KubernetesDeployment(String targetEnvironment) {
-        this.targetEnvironment = targetEnvironment;
+    KubernetesDeployment(String targetEnvironment) {
+        this.targetEnvironment = targetEnvironment
     }
 
 
@@ -28,7 +28,7 @@ class KubernetesDeployment implements Step {
                 ]
                 buildContext.getScriptEngine().wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
                     templateApplicationYml();
-                    kubectl("apply -f kubernetes/");
+                    kubectl("apply -f kubernetes/")
                 }
             }
         }
@@ -36,9 +36,9 @@ class KubernetesDeployment implements Step {
 
     void templateApplicationYml() {
         FileTemplater templater = new FileTemplater(buildContext, "kubernetes/application.yml");
-        templater.template("%VERSION%", buildContext.getVersion().trim());
-        templater.template("%NAMESPACE%", buildContext.getScriptEngine().env.NAMESPACE);
-        templater.template("%INGRESS_BASE_URL%", buildContext.getScriptEngine().env.INGRESS_BASE_URL);
+        templater.template("%VERSION%", buildContext.getVersion().trim())
+        templater.template("%NAMESPACE%", buildContext.getScriptEngine().env.NAMESPACE)
+        templater.template("%INGRESS_BASE_URL%", buildContext.getScriptEngine().env.INGRESS_BASE_URL)
     }
 
     void kubectl(String cmd) {
@@ -47,7 +47,7 @@ class KubernetesDeployment implements Step {
                 "--certificate-authority ${buildContext.getScriptEngine().env.KUBERNETES_CA} " +
                 "--server ${buildContext.getScriptEngine().env.MASTER_URL} " +
                 "--token ${buildContext.getScriptEngine().env.KUBERNETES_TOKEN} " +
-                "${cmd}");
+                "${cmd}")
 
     }
 }

@@ -1,11 +1,9 @@
 package com.ibm.oip.jenkins
 
 import com.ibm.fss.iip.jenkins.notification.*
-import com.ibm.oip.jenkins.notification.Notifier
-import com.ibm.oip.jenkins.notification.SlackNotifier
 
-class PipelineRunner  implements Serializable {
-    private Pipeline[] pipelines; 
+class PipelineRunner implements Serializable {
+    private Pipeline[] pipelines;
 
     private Object scriptEngine;
 
@@ -33,12 +31,12 @@ class PipelineRunner  implements Serializable {
     public PipelineRunner withProperties(customProperties) {
         this.customProperties = customProperties;
         return this;
-    }  
+    }
 
     public PipelineRunner withBranch(String branch) {
         this.branch = branch;
         return this;
-    }  
+    }
 
     public PipelineRunner withEnv(Object env) {
         this.env = env;
@@ -53,15 +51,15 @@ class PipelineRunner  implements Serializable {
     public void run() {
         def buildContext;
 
-        for(int i = 0; i < this.pipelines.length; i++) {
-            if(this.pipelines[i].canBuild(branch)) {
+        for (int i = 0; i < this.pipelines.length; i++) {
+            if (this.pipelines[i].canBuild(branch)) {
                 try {
                     buildContext = BuildContext.create(scriptEngine, customProperties, branch);
                     buildContext.setNodeLabel(this.nodeLabel);
                     this.pipelines[i].run(buildContext);
-                } catch(err) {
+                } catch (err) {
                     this.pipelines[i].notifier.notifyFailure(buildContext)
-                    buildContext.getScriptEngine().currentBuild.result = 'FAILURE';
+                    scriptEngine.currentBuild.result = 'FAILURE';
                     throw err;
                 }
                 return;

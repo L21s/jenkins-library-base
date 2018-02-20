@@ -3,14 +3,14 @@ package com.ibm.oip.jenkins.steps.deployment.cloudfoundry
 import com.ibm.oip.jenkins.BuildContext
 import com.ibm.oip.jenkins.steps.Step
 
-class CloudFoundryDeployment implements Step {
+class CloudFoundryDeployment extends Step {
     private String targetEnvironment;
 
-    public CloudFoundryDeployment(String targetEnvironment) {
+    CloudFoundryDeployment(String targetEnvironment) {
         this.targetEnvironment = targetEnvironment;
     }
 
-    public void doStep(BuildContext buildContext) {
+    void doStep(BuildContext buildContext) {
         def version = buildContext.version.substring(2)
         buildContext.changeStage("Deploy to CF")
         def secrets = [
