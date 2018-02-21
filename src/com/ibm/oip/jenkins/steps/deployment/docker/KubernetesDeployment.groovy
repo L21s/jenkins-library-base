@@ -27,7 +27,7 @@ class KubernetesDeployment extends Step {
                                     [$class: 'VaultSecretValue', envVar: 'KUBERNETES_TOKEN', vaultKey: 'token']]]
                     ]
                     wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
-                        templateApplicationYml();
+                        templateApplicationYml()
                         kubectl("apply -f kubernetes/")
                     }
                 }
@@ -38,16 +38,16 @@ class KubernetesDeployment extends Step {
     void templateApplicationYml() {
         FileTemplater templater = new FileTemplater(buildContext, "kubernetes/application.yml");
         templater.template("%VERSION%", buildContext.getVersion().trim())
-        templater.template("%NAMESPACE%", env.NAMESPACE)
-        templater.template("%INGRESS_BASE_URL%", env.INGRESS_BASE_URL)
+        templater.template("%NAMESPACE%", buildContext.getScriptEngine().env.NAMESPACE)
+        templater.template("%INGRESS_BASE_URL%", buildContext.getScriptEngine().env.INGRESS_BASE_URL)
     }
 
     void kubectl(String cmd) {
-        sh("kubectl " +
-                "--namespace ${env.NAMESPACE} " +
-                "--certificate-authority ${env.KUBERNETES_CA} " +
-                "--server ${env.MASTER_URL} " +
-                "--token ${env.KUBERNETES_TOKEN} " +
+        buildContext.getScriptEngine().sh("kubectl " +
+                "--namespace ${buildContext.getScriptEngine().env.NAMESPACE} " +
+                "--certificate-authority ${buildContext.getScriptEngine().env.KUBERNETES_CA} " +
+                "--server ${buildContext.getScriptEngine().env.MASTER_URL} " +
+                "--token ${buildContext.getScriptEngine().env.KUBERNETES_TOKEN} " +
                 "${cmd}")
 
     }
