@@ -17,9 +17,9 @@ class PrepareRelease extends AbstractGradleStep {
         this.versionBumpDeterminer = new GithubPRLabelVersionBumpDeterminer();
     }
     def bumpMapping = [
-        "patch": "incrementPatch",
-        "minor": "incrementMinor",
-        "major": "incrementMajor"
+            "patch": "incrementPatch",
+            "minor": "incrementMinor",
+            "major": "incrementMajor"
     ]
 
     void doStep(BuildContext buildContext) {
@@ -32,8 +32,9 @@ class PrepareRelease extends AbstractGradleStep {
     }
 
     private void prepareRelease(buildContext, versionBump) {
-        buildContext.changeStage('Create release');
-        doGradleStep(buildContext, "createRelease -Prelease.disableRemoteCheck -Prelease.disableUncommittedCheck -Prelease.versionIncrementer=${versionBump} ");
+        buildContext.changeStage('Create release') {
+            doGradleStep(buildContext, "createRelease -Prelease.disableRemoteCheck -Prelease.disableUncommittedCheck -Prelease.versionIncrementer=${versionBump} ")
+        }
     }
 
     private String retrieveNextVersion() {
