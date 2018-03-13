@@ -12,7 +12,7 @@ class FileTemplater implements Serializable {
     }
 
     public void template(searchString, replacement) {
-        buildContext.getScriptEngine().sh "sed -i.bak 's|$searchString|$replacement|g' $filePath";
+        buildContext.getScriptEngine().sh "find $filePath -type f -exec sed -i.bak 's|$searchString|$replacement|g' {} \\;";
     }
 
     public void deleteLinesMatching(searchString) {
