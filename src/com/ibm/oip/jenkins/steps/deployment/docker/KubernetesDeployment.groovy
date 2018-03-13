@@ -36,7 +36,7 @@ class KubernetesDeployment extends Step {
     }
 
     void templateApplicationYml() {
-        FileTemplater templater = new FileTemplater(buildContext, "kubernetes/application.yml");
+        FileTemplater templater = new FileTemplater(buildContext, "kubernetes/*.yml");
         templater.template("%VERSION%", buildContext.getVersion().trim())
         templater.template("%NAMESPACE%", buildContext.getScriptEngine().env.NAMESPACE)
         templater.template("%INGRESS_BASE_URL%", buildContext.getScriptEngine().env.INGRESS_BASE_URL)
