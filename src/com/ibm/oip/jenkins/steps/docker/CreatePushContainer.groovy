@@ -26,7 +26,7 @@ class CreatePushContainer extends Step {
                 sh "docker login -u \$USERNAME -p \$PASSWORD \$DOCKER_REGISTRY_URL"
             }
             sh "docker push ${imageName}:${version}"
-            sh "docker push ${imageName}}:latest"
+            sh "docker push ${imageName}:latest"
 
             // delete the images from jenkins
             sh "docker rmi ${imageName}:${version}"
