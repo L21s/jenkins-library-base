@@ -8,7 +8,14 @@ class CreatePushContainer extends Step {
         buildContext.changeStage('Build Container') {
             def project = buildContext.getProject()
             def version = buildContext.getVersion()
-            sh "docker build -t \$DOCKER_REGISTRY_URL/\$DOCKER_REGISTRY_NAMESPACE/${project}:${version} -t \$DOCKER_REGISTRY_URL/\$DOCKER_REGISTRY_NAMESPACE/${project}:latest .";
+
+            def imageName = ${buildContext.scriptEngine.env.DOCKER_REGISTRY_URL}
+            if(${buildContext.scriptEngine.env.DOCKER_REGISTRY_NAMESPACE} != "") {
+                imageName += "/${buildContext.scriptEngine.env.DOCKER_REGISTRY_NAMESPACE}"
+            }
+            imageName += "/${project}"
+
+            sh "docker build -t ${imageName}:${version} -t ${imageName}:latest .";
 
             def secrets = [
                     [$class: 'VaultSecret', path: "secret/${buildContext.getGroup()}/tools/docker-registry", secretValues: [
