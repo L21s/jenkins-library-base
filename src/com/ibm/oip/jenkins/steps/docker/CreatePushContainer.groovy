@@ -25,12 +25,12 @@ class CreatePushContainer extends Step {
             wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
                 sh "docker login -u \$USERNAME -p \$PASSWORD \$DOCKER_REGISTRY_URL"
             }
-            sh "docker push \$DOCKER_REGISTRY_URL/\$DOCKER_REGISTRY_NAMESPACE/${project}:${version}"
-            sh "docker push \$DOCKER_REGISTRY_URL/\$DOCKER_REGISTRY_NAMESPACE/${project}:latest"
+            sh "docker push ${imageName}:${version}"
+            sh "docker push ${imageName}}:latest"
 
             // delete the images from jenkins
-            sh "docker rmi \$DOCKER_REGISTRY_URL/\$DOCKER_REGISTRY_NAMESPACE/${project}:${version}"
-            sh "docker rmi \$DOCKER_REGISTRY_URL/\$DOCKER_REGISTRY_NAMESPACE/${project}:latest"
+            sh "docker rmi ${imageName}:${version}"
+            sh "docker rmi ${imageName}:latest"
         }
     }
 }
