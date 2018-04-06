@@ -9,8 +9,8 @@ class CreatePushContainer extends Step {
             def project = buildContext.getProject()
             def version = buildContext.getVersion()
 
-            def imageName = ${buildContext.scriptEngine.env.DOCKER_REGISTRY_URL}
-            if(${buildContext.scriptEngine.env.DOCKER_REGISTRY_NAMESPACE} != "") {
+            def imageName = buildContext.scriptEngine.env.DOCKER_REGISTRY_URL
+            if(buildContext.scriptEngine.env.DOCKER_REGISTRY_NAMESPACE != "") {
                 imageName += "/${buildContext.scriptEngine.env.DOCKER_REGISTRY_NAMESPACE}"
             }
             imageName += "/${project}"
