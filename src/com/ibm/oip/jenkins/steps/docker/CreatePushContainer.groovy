@@ -10,10 +10,10 @@ class CreatePushContainer extends Step {
             def version = buildContext.getVersion()
 
             def imageName = buildContext.scriptEngine.env.DOCKER_REGISTRY_URL
-            if(buildContext.scriptEngine.env.DOCKER_REGISTRY_NAMESPACE != "") {
+            if(buildContext.scriptEngine.env.DOCKER_REGISTRY_NAMESPACE != null && buildContext.scriptEngine.env.DOCKER_REGISTRY_NAMESPACE != "") {
                 imageName += "/${buildContext.scriptEngine.env.DOCKER_REGISTRY_NAMESPACE}"
             }
-            imageName += "/${project}"
+            imageName += "${project}"
 
             sh "docker build -t ${imageName}:${version} -t ${imageName}:latest .";
 
